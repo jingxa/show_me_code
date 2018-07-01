@@ -1,5 +1,5 @@
 template<class T， class Alloc>
-class simple_aaloc{
+class simple_alloc{
 public:
 	static T* allocate(size_t n){
 		return 0 == n ? 0 : (T*)Alloc::allocate(n*sizeof(T));
@@ -32,7 +32,7 @@ private:
 	
 public:
 //	分配内存
-	static void * allocate(){
+	static void * allocate(size_t n){
 		void* result = malloc(n); 	// 直接使用malloc
 		if(0 == result)result = oom_malloc(n); // 如果分配不成功，改用oom_malloc()
 		return result;

@@ -169,6 +169,63 @@ void vector<T,Alloc>::insert_aux(iterator position, const T& x){
 
 
 
+// vector::insert()
+
+// c从position 开始插入n个元素， 元素初始值为x；
+
+template<Class T, class Alloc>
+void vector<T, alloc>:: insert(iterator position, size_type n, const T& x){
+	if(n != 0){// 当N！= 0的时候才可以进行
+		if(size_type(end_of_storage - finish )>= n){
+			// 备用空间足够
+			T x_copy = x;
+			// 一下计算插入点之后的现有元素个数
+			const size_type elem_after = finish - position;
+			iterator old_finish = finish;
+			if(elem_after > n){  // “插入点之后现有元素个数” > “新增的元素个数”
+				uninitialized_copy(finish - n, finish,finish);  // 覆盖
+				finish += n;  // vector  后端标记后移
+				copy_backward(position, old_finish - n, finish); // 前面向后移动n个位置
+				fill(postion, position + n, x_copy);	// 从插入点开始填值
+			}else{
+				// 插入点的之后的现有元素个数 小于等于 “新增元素个数”
+				uninitialized_fill_n(finish, n - elem_after, x_copy); 
+				finish += n - elem_after;
+				uninitialized_copy(position, old_finish, finish);
+				finish += elem_after;
+				fill(position, old_finish, x_copy);
+			}
+		}else{  // 备用空间 小于 “新增元素个数”（新配置额外的内存）
+			// 首先决定新的长度： 旧的长度的两倍， 或者旧长度 + 新元素个数
+			const size_type old_size = size();
+			const size_type len  = old_size  + max(old_size, n);
+			// 配置新的vector空间
+			iterator new_start = data_allocator::allocate(len);
+			iterator new_finish = new_start;
+			__STL_TRY{
+				// 一下首先将旧的vector 插入点之前的元素插入到新的空间
+				new_finish = uninitialized_copy(start, position, new_start);
+				// 然后将新增元素填入新空间
+				new_finish = uninitialized_fill_n(new_finish,n, x);
+				//然后将position 之后的点插入到新空间
+				new_finish = uninitialized_copy(position, finish, new_finish);
+			}
+			# ifdef __STL_USE_EXCEPTIONS
+			catch(...){
+				destroy(new_start, new_finish);
+				data_allocator::deallocate(new_start, len);
+				throw;
+			}
+			# endif
+			// 一下清除并且释放旧的vector
+			destroy(start, finish);
+			deallocate();
+			start = new_start;
+			finish = new_finish;
+			end_of_storage = new_start + len;
+		}
+	}
+	}
 
 
 

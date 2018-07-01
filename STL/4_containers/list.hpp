@@ -1,0 +1,285 @@
+template<class T>
+struct __list_node{
+	typedef void* void_pointer;
+	void_pointer prev;  // 型别为void* ,其实可设为__list_node<T>*
+	void_pointer next;
+	T data;
+};
+
+
+/**
+	list 的迭代器
+	类型: 双向迭代器 --- Bidirectional iterators
+*/
+template<class T, class Ref, class Ptr>
+struct __list_iterator{
+	typedef __list_iterator<T,T&,T*> iterator;
+	typedef __list_iterator<T,Ref,Ptr> self;
+	
+	typedef bidirectional_iterator_org iterator_category;
+	typedef T 				value_type;
+	typedef Ptr				pointer;
+	typedef Ref				reference;
+	typedef __list_node<T>* link_type;
+	typedef size_t 			size_type;
+	typedef	ptrdiff_t		difference_type;
+	
+	link_type	node;		//迭代器内部的普通指针，指向list节点
+	
+// 构造函数
+
+	__list_iterator(link_type x):node(x){}
+	__list_iterator(){}
+	__list_iterator(const iterator& x):node(x.node){}
+	
+	
+	bool operator==(const self& x) const {return node == x.node;}
+	bool operator!=(const self& x) const {return node != x.node;}
+	//以下是对迭代器取值
+	reference operator*() const {return (*node).data;}
+	
+	// 迭代器成员存取运算子的标准做法
+	pointer operator->() const{reteurn &(operator*());}
+	
+	// 对迭代器累加1， 就是前进一个节点
+	self& operator++(){
+		node = (link_type)((*node).next);
+		return *this;
+	}
+	
+	self operator++(int){
+		self tmp = *this;
+		++*this;
+		return tmp;
+	}
+	
+	//迭代器递减1， 就是后退一个节点
+	self& operator--(){
+		node = (link_type)((*node).prev);
+		return *this;
+	}
+	self operator--(int){
+		self tmp = *this;
+		--*this;
+		return tmp;
+	}
+
+	
+};
+
+
+/**
+	list的数据结构
+	- 不仅是一个双向链表
+	- 还是一个环状链表
+	- 让指针node指向刻意置于尾端的空白节点，
+		node便能符合STL的“前闭后开”的区间要求
+*/
+
+template< class T, Alloc = alloc>
+class list{
+protected:
+	typedef __list_node<T> list_node;
+	// 专属空间分配器,每次配置一个节点大小
+	typedef simple_alloc<list_node,Alloc> list_node_allocator;  
+	
+public:
+	typedef list_node* link_type;
+	
+protected:
+	link_type node;   // 只要一个指针，就可表示整个链表
+	
+
+	
+protected:
+	/* 配置，释放，构造， 销毁一个节点 */
+	// 配置一个节点并且返回
+	link_type get_node(){reteurn list_node_allocator::allocate();}
+	// 释放一节点
+	void put_node(link_type p){ list_node_allocator::deallocate(p);}
+	
+	// 产生一个节点，带有元素值
+	link_type create_node(const T& x){
+		link_type p = get_node();
+		construct(&p->data, x);    // 全局函数
+		return p;
+	}
+	// 销毁一个节点
+	void destroy_node(link_type p){
+		destroy(&p->data);	// 全局函数
+		put_node(p);
+	}
+	
+	
+public:
+	// node指向尾端空白节点
+	iterator begin(){return (link_type)((*node).next);}
+	iterator end() {return node;}
+	bool empty() const{return node->next == node;}
+	size_type size() const{
+		size_type result =0;
+		distance(begin(), end(), result);
+		return result;
+	}
+	
+	// 取头结点的内容
+	reference front() const {return *begin();}
+	// 取尾节点的内容
+	reference back() const { return *(--end());}
+	
+public:
+	// constructers
+	list(){empty_initialize();} // 产生一个空链表
+	
+
+protected:
+	void empty_initialize(){
+		node = get_node();
+		node->next = node ;
+		node->prev = node;  // 头和尾都指向自己，不设值
+	}
+
+
+	
+public:
+
+	// 在position 中插入一个节点，值为x
+	iterator insert(iterator position, const T& x){
+		link_type tmp = create_node(x);
+		// 调整双指针
+		tmp->next = position.node;
+		tmp->prev = position.node->prev;
+		(link_type(position.node->prev))->next = tmp;
+		position.node->prev = tmp;
+	}
+
+	
+	// 插入一个节点，作为头结点
+	void push_front(const T& x){insert(begin(), x);}
+	//插入一个节点，作为尾巴节点
+	void push_back(const T& x){insert(end(),x);}
+	
+	// 移除 迭代器position的节点,返回下一个节点的迭代器
+	iterator erase(iterator position){
+		link_type next_node = link_type(position.node->next);
+		link_type prev_node = link_type(position.node->prev);
+		prev_node->next = next_node;
+		next_node->prev = prev_node;
+		destroy_node(position.node);
+		return iterator(next_node);
+	}
+	
+	// 移除头结点
+	void pop_front(){
+		erase(begin());
+	}
+	
+	//移除尾巴节点
+	void pop_back(){
+		iterator tmp == end();
+		erase(--tmp);
+	}
+	
+	// 清除所有节点
+	clear(){
+		link_type cur = (link_type)node->next;
+		while(cur != node){
+			link_type tmp = cur;
+			cur = (link_type)cur->next;
+			destroy_node(tmp);	// 销毁一个节点
+		}
+		// 恢复node原始状态
+		node->next = node;
+		node->prev = node;
+	}
+	
+	
+	// 将数值为value的元素移除
+	remove(const T& value){
+		iterator first = begin();
+		iterator last = end();
+		while(first != last){
+			iterator next = first;
+			++next ;
+			if(*next == value)erase(next);
+			first = next;
+		}
+	}
+	
+	// 移除数值相同的连续元素 “连续相同的元素”，移除剩余一个
+	void unique(){
+		iterator first = begin();
+		iterator last = end();
+		if(first == last) return ;  // 空链表，什么都不必做
+		iterator next = first;
+		while(++next != last)
+			if(*first == *next){
+				erase(next);
+			}else{
+				first = next;
+				next = first;
+			}
+	}
+	
+	
+protected:
+	// 将[first, last) 内的元素移动到position 之前
+	void transfer(iterator position, iterator first, iterator last){
+		if(position != last){
+			(*(link_type)((*last.node).prev)).next = position.node;  //后一个元素
+			(*(link_type)((*first.node).prev)).next = last.node; // 前一个元素
+			(*(link_type)((*position.node).prev).next = first.node;
+			link_type tmp  = link_type(*(position.node).prev);
+			(*position.node).prev = (*last.node).prev;
+			(last.node).prev = (*first.node).prev;
+			(*firt.node).prev = tmp;
+		}
+	}
+	
+	
+	
+	
+	
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
