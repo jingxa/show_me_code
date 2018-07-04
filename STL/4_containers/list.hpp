@@ -231,15 +231,103 @@ protected:
 			(*(link_type)((*position.node).prev).next = first.node;
 			link_type tmp  = link_type(*(position.node).prev);
 			(*position.node).prev = (*last.node).prev;
-			(last.node).prev = (*first.node).prev;
+			(*last.node).prev = (*first.node).prev;
 			(*firt.node).prev = tmp;
 		}
 	}
 	
+public:
+// 将x接于position 之前， x必须不同于*this
+void splice(iterator position, list& x){
+	if(!x.empty())
+		transfer(position, x.begin(), x.end());
+}
+
+// 将i所指的元素接于position 之前，position 和i可指向同一个list
+void splice(iterator position, list&, iterator i){
+	iterator  j = i;
+	++j;
+	if(position == i || position == j)return ;
+	ransfer(position, i, j);
 	
+}
+
+//将[first, last)内所有的元素接于position 所指位置之前
+// 可为同一list的迭代器
+// position 不能在区间之中
+void splice(iterator position, list&, iterator first,iterator last){
+	if(first != last){
+		transfer(position, first, last);
+	}
+
+
+	//  将x合并到*this中，两个list内容必须先经过递增排序
+	void  merge(list<T,Alloc>& x){
+		iterator first1 = begin();
+		iterator last1 = end();
+		iterator first2 = x.begin();
+		iterator last2  = x.end();
+		
+		// 前提是，两个lists都已经经过递增排序
+		while(first1 != last1 && first2 != last2){
+			if(*first2 < *first1){
+				iterator next = first2;
+				transfer(first1, first2, ++next);
+				first2 = next;
+			}else{
+				++first1;
+			}
+			if(first2 != last2)transfer(last2, first2, last2);
+		}
+	}
+
+	//逆向重置
+	void reverse(){
+		// 如果空链表，不进行操作
+		// size ==0 或者 size == 1
+		if(node->next == node || link_type(node->next)->next == node)
+			return;
+		iterator first = begin();
+		++ first;
+		while(first != end()){
+			iterator old = first;
+			++ first;
+			transfer(begin(), old, first);
+		}
+		
+	}
 	
+	// list 不能STL算法 sort(), 必须使用自己的sort() member function,
+	// stl算法 sort()只接受randomAccessIterator
+	// 本函数采用quick sort
+	void sort(){
+		// size ==0 || size ==1
+		if(node->next == node || link_type(node->next)->next == node)
+			return ;
+		
+		// 一些新的lists,作为中介数据存放区
+		list<T, Alloc> carry;
+		list<T, Alloc> counter[64];
+		int fill =0；
+		while(!empty()){
+			carry.splice(carry.begin(), *this, begin());
+			int i=0;
+			while( i < fill && !counter[i].empty()){
+				counter[i].merge(carry);
+				carry.swap(counter[i++]);
+			}
+			carry.swap(counter[i]);
+			if(i == fill)++fill;
+		}
+		
+		
+		for(int i=1 ; i< fill; ++i){
+			counter[i].merge();
+		}
+		swap(counter[fill - 1]);
 	
-	
+	}
+
 
 };
 
