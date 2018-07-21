@@ -191,7 +191,7 @@ public:
 	void add_or_update_mapping(Key const& key, const Value& value){
 		get_bucket(key).add_or_updata_mapping(key, value);
 	}
-	
+	 
 	void remove_mapping(const Key& key){
 		get_bucket(key).remove_mapping(key);
 	}

@@ -356,6 +356,179 @@ int numTree(int n){
 
 
 
+//例子7： coin change
+/*
+	给一个值N,N意味着不同的硬币的组合，一共有{s1,s2,s3,..sm}种硬币；
+	有多少种组合方式
+	子问题状态：
+	ways(i,j) = ways(i-s(j) ,j) + ways(i,j-1), i：[0,N], j: [1,m]
+*/
+
+int countWays(vector<int> S, int m, int n){
+	vector<int> table(n+1,0);
+	table[0] =1;
+	for(int i=1;i<=n;i++){
+		for(int j=0;j<m;j++){
+			table[i] +=(i-s[j] >=0)?table[i-s[j]] : 0;
+		}
+	}
+	return table[n];
+}
+
+
+
+
+// 例子8： coin change2
+/*
+	...
+*/
+
+
+/* 
+	3. 最长子序列问题
+	用DP table来记录以当前节点为末节点的序列的解；
+	
+*/
+
+// 例子1： 最长子序列
+/*
+	最长递增子序列{1,3,2,4}==> 1,2,4 为3
+	maxlen(i) = max(maxlen(k),k = 0~i-1 and array[i] > array[k]) + 1
+	
+*/
+int longestSub(int arr[], int n){
+	vector<int> maxlen(n,1);
+	int g_max = 0;
+	
+	for(int i=0;i<n;i++){
+		for(int j=0;j<i;j++){
+			if(arr[i] > arr[j] && maxlen[j]+ 1> maxlen[i])
+				maxlen[i] = maxlen[j] +1;
+		}
+	}
+	
+	for(int i=0;i<n;i++){
+		if(g_max < maxlen[i])
+			g_max = maxlen[i];
+	}
+	return g_max;
+}
+
+
+// 例子2： gas station
+/*
+	一圈的点，距离不一样，寻找一个最小的点，能够走完一圈；
+	array[i] = gas[i] - cost[i]
+*/
+
+int mincircuit(vector<int>& gas, vector<int>& cost){
+	int size = gas.size();
+	int subsum = 0, sum =0;
+	int array[gas.size()];
+	int index =0;
+	for(int i=0;i<size;i++){
+		array[i] = gas[i] - cost[i];
+		sum += array[i];
+	}
+	
+	if(sum < 0){
+		return -1;
+	}
+	for(int i=0;i<size;i++){
+		subsum += array[i];
+		if(subsum < 0){
+			subsum  = 0;
+			index = i+1;
+		}
+	}
+	return index;
+}
+
+
+// 例子3： 最长共同子序列
+/*
+	ABCDGH AEDFHR  : ADH, 长度为3
+	
+	len(i,j) = (str1[i-1] == str2[j-1]) ? len(i-1,j-1) +1 : max{len(i,j-1),len(i-1,j)}
+*/
+
+int lcs(string str1, string str2){
+	vector<int> len(str1.size() + 1, vector<int>(str2.size+1));  // m*n 矩阵
+	for(int i=0;i<str1.size();i++){
+		for(int j=0;j<str2.size();j++){
+			if(i==0 || j==0)
+				len[i][j] = 0;
+			else if(str1[i-1] == str2[j-1])
+				len[i][j] = len[i-1][j-1] + 1;
+			else
+				len[i][j] = max(len[i][j-1], len[i-1][j-1]);
+		}
+	}
+	return len[str1.size()][str2.size()];
+	
+}
+
+
+
+/*
+	模式识别
+	4. 如果当前点的解，既依赖于前驱，还依赖于后继，但是两个独立，
+	则分别从左边开始计算dp，然后从右边开始计算dp，
+	然后同一个dp合并解；
+*/
+
+
+// 例子1： product without self
+/*
+	给一个数组， 用除了这个数其他元素的乘积代替这个数
+	{4,3,2,1,2} ==》 {12,16,24,48,24}
+*/
+
+
+void replaceProduct(int a[], int n){
+	int pro_below[n];  // 从做往右
+	int p=1;
+	for(int i=0;i<n;i++{
+		pro_below[i] = p; // 当前值替换
+		p *= a[i];
+	}
+	
+	int pro_above[n];
+	p = 1;
+	for(int i=n-1;i>=0;--i){
+		pro_above[i] = p;
+		p*=a[i];
+	}
+	
+	int pro[n];
+	for(int i=0;i<n;i++){
+		pro[i] = pro_below[i] * pro_above[i];
+	}
+	
+	
+}
+
+
+// 方法2
+void replaceProduct(int a[], int n){
+	int p = 1;
+	vector<int> b(n,1);
+	for(int =0;i<n;i++){
+		t[i] = p;
+		p *= a[i];
+	}
+	p =1;
+	for(i=n-1;i>=0;i--){
+		a[i] = t[i] * p;
+		p *= a[i];
+	}
+	
+	
+}
+
+
+
+
 
 
 
