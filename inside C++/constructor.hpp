@@ -145,5 +145,131 @@ Snow_white::Snow_white():sneezy(1024){
 
 
 
+/*
+	二。 copy  constructor
+	
+*/
+class ZooAnimal{
+public:
+	ZooAnimal();
+	virtual  ~ZooAnimal();
+	
+	virtual void animate();
+	virtual void draw();
+	// ...
+private:
+	// animate()和draw()需要的数据
+};
+
+class Bear: public ZooAnimal{
+public:
+	Bear();
+	virtual void animate();
+	virtual void draw();
+	virtual void dance();
+	// ...
+private:
+	// 几个函数的数据
+};
+
+
+/*
+	当ZooAnimal利用另一个 ZooAnimal 作为初值，Bear 以另一个 Bear作为初值，
+	都可以直接靠“ bitwise copy semantics ”完成
+	
+	yoqi被默认构造函数初始化， vptr被设定为Bear class 的虚函数表，
+	而winnie 拷贝 yoqi 的vptr是安全的；
+*/
+
+Bear yoqi;
+Bear winnie = yoqi;
+
+
+/*
+	但是，当一个基类使用派生类的object 内容做初始化操作，
+	franny 的vptr不能指向Bear的虚函数表，（如果使用“ bitwise copy”）
+	导致错误；
+	
+	因此，合成出来的 ZooAnimal copy constructor 会明确设定object的vptr指向
+	ZooAnimal 的虚函数表，而不是直接从 右边的class object拷贝过来；
+	*/
+ZooAnimal franny = yoqi; // 这回发生切割行为；
+
+
+
+/*
+	处理 virtual Base Class Subobject
+	
+	1. virtual base  class 
+	2. 一个class object 以另一个object作为初值，后者拥有virtual base class subojbect,
+	   会使 “bitwise copy”失效；
+	   
+	编译器都虚拟继承的承诺： 让派生类对象中的“virtual base class subojbect位置”在
+	执行器准备好；“Bitwise copy”会破坏这个位置，所有在合成的copy constructor中
+	
+*/
+
+class Raccon: public virtual ZooAnimal{
+public:
+	Raccon(){ /*设定 private的初值*/}
+	Raccon(int val){/* 初始值设定*/}
+	// ..
+private:
+	// 所有数据
+};
+
+/*
+	编译器产生的代码：
+	1. 调用 ZooAnimal 的默认构造函数，
+	2. 将 Raccon 的vptr 初始化
+	3. 并且在 Raccon 中定位出 ZooAnimal subojbect的位置
+	这些代码安插在 Raccon 的两个constructor 中的最前部分；
+*/
+
+
+/*
+	如果 Raccon object	 利用另一个 Raccon object 作为初始值；
+	那么 bitwise copy  足够
+	
+	但是如果使用 派生类来作为基类的初值，编译器必须合成一个copy constructor，
+	为了使不同类的vptr指向正确的位置；然后对每一个members执行必要的memberwise的初始化；
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  
