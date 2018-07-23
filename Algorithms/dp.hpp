@@ -528,11 +528,66 @@ void replaceProduct(int a[], int n){
 
 
 
+/* 例子2:  hold water */
+// 当前节点的储水量 == 左侧最高海拔 和右侧最高海拔的较小值减去当前节点的海拔
+
+int trap(int A[], int n){
+	if(n<=0)return 0;
+	vector<int> dp(n,0);
+	
+	int left_max = 0, right_max = 0, water =0;
+	for(int i=0;i<n;i++){
+		dp[i] =  left_max;
+		if(A[i] > left_max){
+			left_max = A[i];
+		}
+	}
+	
+	for(int i=n-1;i>=0;i--){
+		if(min(right_max,dp[i]) > A[i])
+			water += min(right_max ,dp[i]) - A[i];
+		
+		if(A[i] > right_max)
+			right_max = A[i];
+	}
+	
+	return water;
+
+}
 
 
 
 
 
+/*
+	模式识别
+	3. 用Memorization （TOp-Down）解决收敛问题
+	核心： 在原有框架下，储存子问题的计算结果，在重复计算子问题时候
+	返回已经计算的值；
+	
+*/
+
+// 例子：1 Tallest stack of boxes
+/*
+	
+*/
+
+
+
+// 例子2： word break2 
+
+
+// 例子3：Edit distance
+/*
+	Andrew
+	Amdrewz
+	最小次数替换两个字符串变得一样
+	
+	插入：E(i,j) = E(i,j-1) + 1
+	删除：E(i,j) = E（i,j） + 1
+	无动作：E(i,j) = E(i-1,j-1)
+	
+	*/
 
 
 
