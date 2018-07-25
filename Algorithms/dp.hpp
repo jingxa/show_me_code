@@ -590,5 +590,55 @@ int trap(int A[], int n){
 	*/
 
 
+	
+	
+// 例子： 3 n个骰子的点数
+// 从6~6*n的概率
+vector<pair<int, double>> dicesSum(int n) {
+	const int face = 6;
+	const int num = face * n;
+	vector<vector<long>> dp(n+1, vector<long>(num+1));	
+
+	for(int i=1;i<=face;i++)  // 一个骰子的点数数量
+		dp[1][i] = 1;
+	
+	for(int i=2;i<=n;i++){   // 骰子数量
+		for(int j=i;j<=num;j++){   // 骰子点数和
+			for(int k=1;k<=face && k<=j;k++)  // 当前和 == i-1个点的数量
+				dp[i][j] += dp[i-1][j-k];
+		}
+	}
+	
+	double totalnum = pow(6,n);
+	vector<pair<int, double>> res;
+	
+	for(int i=n;i<=num;i++){
+		res.push_back(pair<int,double>(i,dp[n][i]/totalnum));
+	}
+		
+		
+	return res;	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
