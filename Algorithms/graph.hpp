@@ -394,8 +394,37 @@ int ladderlength(string start, string end, unordered_set<string>&dict){
 /* 面试图论  */
 // 克隆一个图
 //BFS
+typedef unordered_map<Node*, Node*> Map;
 
-
+Node* clone(Node* graph){
+	if(!graph)
+		return NULL;
+	
+	Map map;
+	queue<Node*> q;
+	q.push(graph);
+	Node* graphCopy = new Node();
+	map[graph] = graphCopy;
+	
+	while(!q.empty()){
+		Node* node = q.front();
+		q.pop();
+		int n= node->neighbors.size();
+		
+		for(int i=0;i<n;i++){
+			Node *neighbor  = node->neighbors[i];
+			if(map.find(neighbor) == map.end()){
+				Node* p = new node();
+				map[node]->neighbors.push_back(p);  // 拷贝节点的邻居
+				map[neighbor] = p;  //  对应节点
+				q.push(neighbor);
+			}else{
+				map[node]->neighbors.push_back(map[neighbor]);
+			}
+		}
+	}
+	return graphCopy;
+}
 
 
 
