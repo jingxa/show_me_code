@@ -39,7 +39,7 @@ public:
 	void deallocate(pointer p, size_type n=1);
 	
 	// 最大容量
-	size_type max_size() const throw();
+	size_type max_size() const throwd();
 	
 	// 基于内存池的元素构造和析构
 	void construct(pointer p , const_reference val);
@@ -52,7 +52,7 @@ public:
 	
 	
 private:
-	// union ， 用于存放指针
+	// union ， 用于存放指针（存放free-list的每个列表的指针）
 	union Slot_{
 		value_type element;
 		Slot_* next;
@@ -65,7 +65,7 @@ private:
 	slot_pointer_ currentBlock_;    // 内存块链表的头指针
 	slot_pointer_ currentSlot_;		// 元素链表的头指针
 	slot_pointer_ lastSlot_;		// 可存放元素的最后指针
-	slot_pointer_ freeSlot_;		// 元素构造后释放的内存链表头指针
+	slot_pointer_ freeSlots_;		// 元素构造后释放的内存链表头指针
 	
 	// 内存对齐所需空间
 	size_type padPonter(data_pointer_ p, size_type align) const throw();
