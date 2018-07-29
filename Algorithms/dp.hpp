@@ -622,9 +622,42 @@ vector<pair<int, double>> dicesSum(int n) {
 
 
 
+// 扑克牌顺子
+// 大小鬼为癞子， 牌面大小为0 ,判断五张牌能够组成顺子；
+
+bool IsContinuous( vector<int> numbers ) {
+	if(numbers.size() != 5)
+		return false;
+	
+	sort(numbers.begin(),numbers.end());
+	int cnt= 0;  // 统计癞子
+	for(auto i: numbers){
+		if(i ==0)
+			cnt ++;
+	}
+	
+	for(int i=cnt+1;i<numbers.size();i++){ // 从癞子第二个后面开始
+		if(numbers[i-1] == numbers[i])  // 同样一张牌
+			return false;
+		cnt -= (numbers[i] - numbers[i-1] -1);  // 癞子补全
+	}
+	
+	return cnt>=0;
+}
 
 
-
+// 圆圈最后剩下的数
+// 选择数m，圆圈中的数字m-1排除，直到最后一个数列；
+int LastRemaining_Solution(int n, int m)
+{
+	if(n == 0)
+		retun -1;
+	if(n==1)
+		return 0;
+	return (LastRemaining_Solution(n-1,m)+m)%n;
+	return (LastRemaining_Solution(n-1,m)+m)%n;
+	return (LastRemaining_Solution(n-1,m)+m)%n;
+}
 
 
 

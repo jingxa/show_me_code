@@ -245,9 +245,199 @@ int maxProduct(int A[], int n){
 
 
 /* 3. 买卖股票 */
-// 
+// 最佳买卖时机
+int maxProfit(vector<int> &prices){
+	if(prices.empty())
+		return 0;
+	int minP = prices[0];
+	int profit = prices[1] - prices[0];
+	
+	for(int i=2; i<prices.size();i++){
+		minp = min(prices[i-1],minp);
+		profit= min(prices[i] - minp, profit);
+	}
+	
+	if(profit < 0)
+		return 0;
+	
+	return profit;
+	
+}
+
+// 例子2：可以多次卖出的最大收益；不能同时买入多次，卖掉才能买入
+int maxProfit(vector<int>& prices){
+	int len = prices.size();
+	if(len<=1)
+		return 0;
+	
+	int sum =0;
+	for(int i=1;i<len;i++){
+		if(prices[i] - prices[i-1] >0)
+			sum+=prices[i] - prices[i-1];
+	}
+	return sum;
+}
 
 
+// 例子3： 最多两次交易
+// i天之前和i天之后 的和
+int maxProfit(vector<int>& prices){
+	int len = prices.size();
+	if(len<=1)
+		return 0;
+	vector<int> profit(len);
+	
+	// 正序遍历,每以天的收益
+	int minP = prices[0];
+	int sum = numeric_limits<int>::min();
+	for(int i=1;i<len;i++){
+		minP= min(minP,prices[i-1]);
+		profit[i] = max(sum, prices[i] - minP);
+		
+		sum = profit[i];
+	}
+	
+	// 逆向遍历
+	int maxP = prices[len-1];
+	int sum2 = numeric_limits<int>::min();
+	for(int i=len-2;i>=0;i--){
+		maxP = max(maxP,prices[i+1]);
+		sum2 = max(sum2, maxP - prices[i]);
+		
+		if(sum2>0){
+			profit[i] = profit[i]+sum2;
+			sum =max(sum,profit[i]);
+ 			}
+	}
+	return sum>0?sum:0;
+	
+	
+}
+
+// 例子4： 寻找丢失的第一个正整数
+// 1，2,0 ： 返回3 ， [3,4,-1],返回2
+int firstMiss(vector<int> A){
+	int size = A.size();
+	for(int i=0;i<size;++i){
+		while(A[i]>0 && A[i] <=size && 
+			A[i] != i+1 && A[i] !=A[A[i] -1]){
+				int tmp = A[A[i] -1];
+				A[A[i] -1] = A[i];
+				A[i] = tmp;
+			} 
+	}
+	
+	for(int i=0;i<size;++i){
+		if(A[i] != i+1){
+			return i+1;
+		}
+	}
+	return size+1;
+}
+
+
+
+int firstMissingPositive(vector<int>& nums) {
+int temp=INT_MIN , t ,i;
+        nums.push_back(0); //pushing 0 into the original array bcoz the indexes start from 0 but the first natural no's start from 1
+        for(int i=0; i<nums.size(); i++)
+        {  //Here, I am making a kind of recursive call to the index of every value if it less than the size of array and greater than 0
+                t=nums[i];  // so that at every index we have the value which is same as its index if it is already present in the array
+                while(t < nums.size() && t >= 0 && t != nums[t])
+                {
+                    temp=nums[t]; //storing the value at present value's index in temp
+                    nums[t] = t;  // placing the value at its index in the array
+                    t=temp;
+                }
+        }
+	
+	i=1;
+	for(i=1;i<=len;i++){
+		if(nums[i] != i)
+			break;
+	}
+	return i;
+}
+
+      
+// 例子5： 单一数
+// 两个数异或
+int singleValue(vector<int> array){
+	int value =0;
+	for(int i=0;i<array.size();i++){
+		value ^=array[i];
+	}
+	return value;
+}
+
+// 例子6： 单一数： 三个重复 ， 3n+1
+//hash_map或者位运算
+// 三个数的位运算，每位都是三的倍数
+int singleValue(vector<int>& nums){
+	if(nums.empty())
+		return 0;
+	
+	int res = 0, sum = 0;
+	for(int i=0;i!=8*sizeof(int);++i){
+		sum = 0;
+		for(int j=0;j!= nums.size();++j){
+			sum += ((nums[i] >>i) & 1);
+		}
+		res  |= ((sum %3) <<1);
+	}
+	return res;
+}
+
+
+// single number 3
+//     
+vector<int> singleNumber(vector<int>& nums) 
+    {
+        // Pass 1 : 
+        // Get the XOR of the two numbers we need to find
+        int diff = accumulate(nums.begin(), nums.end(), 0, bit_xor<int>());
+        // Get its last set bit
+        diff &= -diff;
+
+        // Pass 2 :
+        vector<int> rets = {0, 0}; // this vector stores the two numbers we will return
+        for (int num : nums)
+        {
+            if ((num & diff) == 0) // the bit is not set
+            {
+                rets[0] ^= num;
+            }
+            else // the bit is set
+            {
+                rets[1] ^= num;
+            }
+        }
+        return rets;
+    }
+
+	
+// 例子4：majority numbers
+// 寻找占多半的元素
+// 还可以hash_map
+int majorityNum(vector<int>& nums){
+	int res,count = 0;
+	for(int i=0;i<nums.size();i++){
+		if(count == 0){
+			res = nums[i];
+		}
+		else{
+			if(res == num[i]){
+				count ++;
+			}else{
+				count --;
+			}
+		}
+	}
+	return res;
+}
+
+
+// 例子5： 
 
 
 
