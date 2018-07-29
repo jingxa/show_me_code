@@ -437,7 +437,40 @@ int majorityNum(vector<int>& nums){
 }
 
 
-// 例子5： 
+// 例子5： majority number 2
+// 超过三分之一的数,中最多的一个数
+int majorityNum(vector<int>& num){
+	int res1,res2,count1=0,count2=0;
+	for(int i=0;i<nums.size();i++){
+		if(res1 == nums[i]){
+			count1 ++;
+		}
+		else if(res2 == nums[i]){
+			count2++;
+		}else if(count1 == 0){
+			res1 = nums[i];
+			count1 = 1;
+		}else if(count2 == 0){
+			res2 = nums[2];
+			count2 =1;
+		}else{
+			count1--;
+			count2--;
+		}
+		
+	}
+	
+	count1= count2 =0;
+	for(int i=0;i<nums.size();i++){
+		if(nums[i] == res1){
+			count1 ++;
+		}else if(nums[i] == res2){
+			count2++;
+		}
+	}
+	return count1 > count2?res1:res2;
+}
+
 
 
 
