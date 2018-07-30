@@ -1,14 +1,86 @@
 # 目录
 
-* [1.动态规划](#动态规划)
 
-* [2.查找](#2-查找)
+---
+
+# 位运算
+
+## 二进制中 1 的个数
+>输入一个整数，输出该数二进制表示中 1 的个数。
+>n       : 10110100
+>n-1     : 10110011
+>n&(n-1) : 10110000
+
+
+```
+class Solution {
+public:
+     int  NumberOf1(int n) {
+         int cnt =0;
+         while(n!=0){
+             cnt++;
+             n = n&(n-1);
+         }
+         return cnt;
+     }
+};
+
+
+
+    int  NumberOf1(int n) {
+         int count = 0;
+         while(n != 0){
+             count += n & 1;
+             n = n >>> 1;   // 无符号右移动， 不需要判断正负
+         }
+         return count;
+     }
+
+```
+
 
 
 
 ---
 # 动态规划
 
+
+## 剪绳子
+
+> 把一根绳子剪成多段，并且使得每段的长度乘积最大
+---
+
+```
+    int integerBreak(int n) {
+        if(n<2)
+            return 0;
+        if(n==2)
+            return 1;
+        if(n==3)
+            return 2;
+// 方法1 ： 贪心 ，至少支取2的长度
+//         int timeof3 = n/3;
+//         if((n - timeof3*3) == 1) 
+//             timeof3 --;
+//         int timeof2 = (n-timeof3*3)/2;
+//        // cout<<"timeof3:"<<timeof3<<" timeof2："<<timeof2<<endl;
+        
+//         return pow(3,timeof3)*pow(2,timeof2);
+        
+// 方法2 ： dp[i] = max(dp[i], j*(i-j), j* dp[i-j]) // 分成两部分，或者取一部分，对剩下的再分
+        vector<int> dp(n+1, 0);
+        dp[1] = 1;
+        for(int i=2;i<=n;i++){
+            for(int j=1;j<i;j++){
+                dp[i] = max(dp[i],max(j*(i-j),j * dp[i - j] ));
+            }
+        }
+        return dp[n];
+        
+        
+    }
+
+```
 
 
 
