@@ -473,13 +473,188 @@ int majorityNum(vector<int>& num){
 
 
 
-
 /*4.寻找丢失数 */
+
+
+
+
 /*5. 找主元素 */
+
+
+
+
+
+
 /*6. 排序切割问题 */
+
+// 分割数组
+// 给定一个k， 小于k的排到左边，大于等于的排到右边，返回k的下标；
+int partition(int arr[], int n, int k){
+	int i=0, j = n-1;
+	int tmp;
+	
+	while(i<=j){
+		while(arr[i] < k)
+			i++;
+		while(arr[j] >= k)
+			j--;
+		if(<=j){
+			swap(arr[i],arr[j]);
+			i++;
+			j--;
+		}
+	}
+	return i;
+}
+
+// 方法2
+int partition (int v[], int n, int k){
+	int i=0, j= n-1;
+	while(i<=j){
+		if(v[i] >=k){
+			swap(v[i],v[j]);
+			--j;
+		}
+		else{
+			++i;
+		}
+		
+		if(v[j] < k){
+			swap(v[i],v[j])
+				++i;
+		}else{
+			j--;
+		}
+	}
+	return i;
+}
+
+
 /*7. TOP k 问题 ，最大堆，最小堆 */
+
+// 例子2： 获取第k大的元素，
+// O(n)
+// priority_queue
+
+
+// 例子3： 给一组2维数组，找出第k个点最近于(0,0)的值；
+
+
+// 例子4： top k 
+
+
+
 /*8. LRU Cache问题，链表加 hashmap */
+// LRU: Least Used  : 最近使用,
+// cache最近使用的块
+// T get(K key);
+// void Put(K key, T data);
+template<class K, class T>
+struct LRUCacheEntry{
+	K key;
+	T data;
+	LRUCacheEntry* prev;
+	LRUCacheEntry* next;
+};
+
+template<class K, class T>
+class LRUCache{
+private:
+	unordered_map<k, LRUCacheEntry<K,T>* > _mapping;
+	vector<LRUCacheEntry<K,T>*> 		_freeEntries;  // 剩余cache块
+	LRUCacheEntry<K,T>*					head;
+	LRUCacheEntry<K,T>*					tail;
+	LRUCacheEntry<K,T>*					entries;
+	
+	
+public:
+	LRUCache(size_t size){
+		entries = new LRUCacheEntry<K,T>(size);  // cache块的大小
+		for(int i=0;i<size;i++){
+			_freeEntries.push_back(entries +i);
+		}
+		head = new LRUCacheEntry<K,T>;
+		tail = new LRUCacheEntry<K,T>;
+		head ->prev = NULL;
+		head->next = tail;
+		tail->prev = head;
+		tail->next = NULL;
+	}
+	~LRUCache(){
+		delete head;
+		delete tail;
+		delete[] entries;
+	}
+	
+	// 将节点放到列表尾端
+	void put(K key, T data){
+		LRUCacheEntry<K,T> * node = _mapping[key];  
+		if(node){ // 如果key存在，更新值放在链表头部
+			detach(node);
+			node->data = data;
+			attach(node);
+		}else{ // key不存在
+			if(_freeEntries.empty()){  // 剩余空间为空
+				node = tail->prev; // 在链表中取出最后一块修改
+				detach(node);		// 从链表中移除
+				_mapping.erase(node->key); // 删除node的key
+				node->data = data;
+				node->key = key;   			// 重新赋值node
+				_mapping[key] = node;		// 添加到map和链表中
+				attach(node);
+			}else{	// 剩余空间还有余额
+				node = _freeEntries.back(); // 取出一块
+				_freeEntries.pop_back();
+				node->key = key;
+				node ->data = data;     
+				_mapping[key] = node;		// 添加到map和链表中
+				attach(node);
+			}
+		}
+	}
+	
+	// 将key对应节点提升到链表头部，并且返回节点的值
+	T get(K key){
+		LRUCacheEntry<K,T>* node = _mapping[key];
+		if(node){
+			detach(node);
+			attach(node);
+			return node->data;
+		}else
+			return NULL;
+	}
+	
+private:
+	// 从列表中移除节点
+	void detach(LRUCacheEntry<K,T>* node){
+		node->prev->next = node->next;
+		node->next->prev = node->prev;
+	}
+	
+	void attach(LRUCacheEntry<K,T>* node){  // 节点加入链表开头位置
+		node->next = head->next;
+		node->prev= head;
+		head->next->prev = node;
+	}
+	
+	
+};
+
+// 例子2： 1g内存，判断一个整数是否在40亿个不重复而且无序的int整数；
+// bitmap
+
+
+
+
+
 /*9. 去重问题 bitmap*/
+
+
+
+
 /*10. 搜索问题  倒排索引*/
+
+
+
 /*10.  */
 /*10.  */
