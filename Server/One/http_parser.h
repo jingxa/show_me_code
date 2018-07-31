@@ -1,5 +1,5 @@
-#ifdef HTTP_HTTP_PARSER_H
-#define HTTP_HTTP_PARSER_H
+#ifndef HTTP_PARSER_H
+#define HTTP_PARSER_H
 
 
 #include <string>
@@ -36,18 +36,18 @@ enum LINE_STATE{LINK_OK =0, LINE_ERROR, LINE_MORE};
 enum HTTP_CODE{MORE_DATA = 0, GET_REQUEST, REQUEST_ERROR, FORBIDDEN_REQUEST,
 			INTERNAL_ERROR,CLOSE_CONNECTION};
 
-			
+
 // 客户端请求方法
 enum METHOD{GET = 0, POST, HEAD, PUT, DELETE,TRACE,OPTIONS, CONNECT,PATCH};
 
 // 解析后的数据存储在http_request结构体
 typedef struct{
 	std::string method;  	// 请求方法
-	std::string url; 		// 请求的url
+	std::string uri; 		// 请求的uri
 	std::string version; 	// http版本
 	std::string host;		// 请求的主机名
 	std::string connection; // connection首部
-	
+
 } http_request;
 
 
@@ -55,22 +55,22 @@ class http_parser{
 public:
 	http_parser(const std::string request);
 	~http_parser();
-	http_parser get_parse_result();  // 返回解析结果
-	
-	
+    http_request get_parse_result();  // 返回解析结果
+
+
 private:
 	void parse_line();					// 解析分割出一行内容
 	void parse_requestline();			// 解析请求行
 	void parse_header();				// 解析头部字段
-	
-	
+
+
 	std::string request;				// 客户请求内容
 	std::vector<std::string> lines;   	// 存储每一行
 	http_request parse_result;			// 存储解析结果
 };
 
 
-#endif  // 	HTTP_HTTP_PARSER_H
+#endif  // 	HTTP_PARSER_H
 
 
 

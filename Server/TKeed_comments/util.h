@@ -24,10 +24,19 @@ typedef struct tk_conf
 
 
 /*  util 相关函数声明  */
+// 读取配置文件
 int read_conf(char *filename, tk_conf_t *conf);
+
+// SIGPIPE 信号处理
 void handle_for_sigpipe();
+
+// 绑定监听
 int socket_bind_listen(int port);
+
+// socket设置非阻塞模式
 int make_socket_non_blocking(int fd);
+
+// 处理连接
 void accept_connection(int listen_fd, int epoll_fd, char *path);
 
 

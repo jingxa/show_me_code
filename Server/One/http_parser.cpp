@@ -26,7 +26,7 @@ http_request http_parser::get_parse_result(){
 void http_parser::parse_line(){
 	std::string::size_type line_begin = 0;   // 行首索引
 	std::string::size_type check_index = 0;  // 正在解析的字符索引
-
+	
 	while(check_index < request.size())
 	{
 		// 如果当前字符为‘\r’,则有可能读完一行
@@ -38,7 +38,7 @@ void http_parser::parse_line(){
 				std::cout<<" 请求未读取完整."<<std::endl;
 				return;
 			}
-
+			
 			// 如果下一个字符是 '\n'，说明读取完整一行
 			else if( '\n' == request[check_index + 1])
 			{
@@ -56,7 +56,7 @@ void http_parser::parse_line(){
 		{
 			++check_index; // 继续查询下一个字符
 		}
-
+		
 	}
 	return;
 }
@@ -65,8 +65,8 @@ void http_parser::parse_line(){
 
 void http_parser::parse_requestline()
 {
-	std::string requestline = lines[0];
-
+	std::string requestline = lines[0]; 
+	
 	// first_ws 指向请求行的第一个空白字符(' '或'\t')
 	auto first_ws = std::find_if(requestline.cbegin(), requestline.cend(),
 			[](char c)->bool{return(' '== c || '\t'==c);});
@@ -76,28 +76,28 @@ void http_parser::parse_requestline()
 		std::cout<<"请求格式错误."<<std::endl;
 		return;
 	}
-
+	
 	// http解析请求方法
-	parse_result.method = std::string(requestline.cebin(),first_wt);
-
-
+    parse_result.method = std::string(requestline.cbegin(),first_ws);
+	
+	
 	// http解析version
 	auto reverse_list_ws = std::find_if(requestline.crbegin(), requestline.crend(),  //reverse_list_ws 指向请求行中
 					[](char c)->bool{return (' '== c || '\t' == c);}); 				// 的最后一个空白字符
-
+	
 	auto last_ws = reverse_list_ws.base();  // 转换为正向迭代器
 	parse_result.version = std::string(last_ws,requestline.cend());
-
-	// http解析uri
+	
+	// http解析url
 	while((' '== *first_ws || '\t'==*first_ws) && first_ws != requestline.cend())
 		++first_ws;  // 跳过空白字符
-
+	
 	-- last_ws; // 向前查找普通字符
 	while((' '==*last_ws || '\t'==*last_ws)&& last_ws != requestline.cbegin())
 		--last_ws;
-
-	parse_result.uri = std::string(first_ws,last_ws+1);  // last_ws当前为最后一个字符
-
+	
+    parse_result.uri = std::string(first_ws,last_ws+1);  // last_ws当前为最后一个字符
+	
 	return;
 }
 
@@ -111,14 +111,14 @@ void http_parser::parse_header()
 		if(lines[i].empty()) // 遇到空行，说明头部解析完成
 			return;
 		// 处理host头部字段
-		else if(strncasecmp(lines[i].c_str(),"Host:",5)==0)
+		else if(strncasecmp(lines[i].c_str(),"Host:",5)==0) 
 		{
 			auto iter = lines[i].cbegin() +5; // 跳过 “host:”
 			while(' '== *iter || '\t' == *iter)
 				++iter;
 			parse_result.host = std::string(iter,lines[i].cend());
 		// 处理connection 字段
-		}else if(strncasecmp(lines[i].c_str(),"Connection:",11) == 0)
+		}else if(strncasecmp(lines[i].c_str(),"Connection:",11) == 0)  
 		{
 			auto iter = lines[i].cbegin() + 11;
 			while(' '== *iter || '\t' == *iter)

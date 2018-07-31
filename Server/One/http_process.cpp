@@ -1,0 +1,236 @@
+#include "http_process.h"
+
+/**
+    http_process
+    public 函数实现
+*/
+
+http_process::http_process(const int _epollfd,const int _connfd){
+    this->epollfd = _epollfd;
+    this->connfd = _connfd;
+    read_buffer = new char[READ_BUFFER_SIZE];
+    write_buffer = new char[WRITE_BUFFER_SIZE];
+
+    read_from_connfd();
+}
+
+
+// 析构函数
+http_process::~http_process(){
+    close(connfd);
+    delete[] read_buffer;
+    delete[] write_buffer;
+}
+
+
+
+// 重置 connfd上面的 EPOLLONESHOT 事件
+
+void http_process::reset_oneshot(){
+
+    epoll_event event;
+    event.data.fd = connfd;
+    event.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
+    epoll_ctl(epollfd, EPOLL_CTL_MOD, connfd, &event);
+}
+
+
+// 从连接套接字中读取客户请求
+void http_process::read_from_connfd(){
+    while(true){
+        int ret = recv(connfd, read_buffer, READ_BUFFER_SIZE, 0);
+        if(ret == 0){
+            close(connfd);
+            std::cout<<"Foreiner 关闭连接."<<std::endl;
+            break;
+        }else if(ret < 0){
+
+            if(errno == EAGAIN){ // 资源不可用，须重试
+                    reset_oneshot();
+                    break;
+            }
+        }else{
+
+            std::cout<<"接收到新数据 from:"<<connfd<<std::endl;
+            std::cout<<std::endl;
+
+            // 输出请求头
+            std::cout<<std::string(read_buffer)<<std::endl;
+            std::cout<<std::endl;
+            http_parser p(read_buffer);
+            request = p.get_parse_result();
+        }
+    }
+}
+
+
+
+
+// 从fd中读取数据到缓冲区中
+void http_process::read_to(const int fd, char* buffer){
+    size_t bytes_read = 0;
+    size_t  bytes_left = READ_BUFFER_SIZE;
+    char* ptr = buffer;
+
+    while(bytes_left>0){
+        bytes_read = read(fd,ptr, bytes_left);
+        if(-1 == bytes_read)
+        {
+            if(errno == EINTR)  // 函数被中断
+                bytes_read =0;
+            else
+                return;
+        }else if(0 == bytes_read){
+            break;
+        }
+
+        bytes_left -= bytes_read;
+        ptr += bytes_read;
+    }
+}
+
+
+// 向客户发送http响应
+
+void http_process::send_response(){
+    size_t  bytes_send = 0;
+    size_t bytes_left = std::string(write_buffer).size();
+    char* ptr = write_buffer;
+
+    while(bytes_left > 0){
+        if((bytes_send = write(connfd, ptr, bytes_left))< 0){
+            if(bytes_send < 0 && errno == EINTR)  // 中断
+                bytes_send =0;
+            else  // 其他错误
+                return;
+        }
+        bytes_left -= bytes_send;
+        ptr += bytes_send;
+    }
+}
+
+
+// 解析客户请求中的uri
+int http_process::parse_uri(){
+
+    if(!strstr(request.uri.c_str(), "cgi-bin")){  // 字符串属于uri
+        // 请求静态内容
+        filename = ".";
+        filename += request.uri;
+        if(request.uri[request.uri.size() -1] == '/'){
+            filename += "home.html";
+        }
+        return 1;  // 如果请求静态内容返回1
+    }else{
+        // 请求动态页面
+        auto index = find(request.uri.cbegin(),request.uri.cend(),'?');
+        if(index != request.uri.cend()){
+            cgi_args = std::string(index +1, request.uri.cend());
+        }else
+        {
+            cgi_args = "";
+        }
+        filename  = std::string(request.uri.cbegin(), index);
+        filename = "." + filename;
+        return 0; // 请求动态页面返回0
+    }
+}
+
+
+// 获取客户请求的文件类型
+void http_process::get_filetype(){
+    const char* name = filename.c_str();
+    if(strstr(name, ".html"))
+        filetype = "text/html";
+    else if(strstr(name, ".pdf"))
+        filetype = "application/pdf";
+    else if(strstr(name, ".png"))
+        filetype = "iamge/png";
+    else if(strstr(name, ".gif"))
+        filetype = "image/gif";
+    else if(strstr(name,"jpeg"))
+        filetype = "image/jpeg";
+    else if(strstr(name, ".css"))
+        filetype = "text/css";
+    else
+        filetype = "text/plain";
+}
+
+
+// 服务客户请求的静态内容
+
+void http_process::serve_static(const int filesize){
+    get_filetype();
+    sprintf(write_buffer,"HTTP/1.1 200 OK\r\n");
+    sprintf(write_buffer,"%sServer: Tiny Web Server\r\n",write_buffer); //字符串开头使用%s,为了避免覆盖
+    sprintf(write_buffer,"%sContent-length: %d\r\n",write_buffer, filesize);
+    sprintf(write_buffer,"%sContent-type: %s\r\n\r\n", write_buffer,filetype.c_str());
+    send_response();
+
+    int fd = open(filename.c_str(), O_RDONLY, 0);
+    read_to(fd, write_buffer);
+    send_response();
+
+}
+
+
+
+// 服务客户请求的动态内容（暂时不支持）
+void http_process::serve_dynamic(){
+
+}
+
+
+// 发送错误给客户端
+void http_process::clienterror(const char* errnum,const char* shortmsg,
+                               const char* longmsg)
+{
+    char body[WRITE_BUFFER_SIZE];
+    /* Build the HTTP response body */
+    sprintf(body, "<html><title>Server Error</title>");
+    sprintf(body, "%s<body bgcolor=""ffffff"">\r\n", body);
+    sprintf(body, "%s%s: %s\r\n", body, errnum, shortmsg);
+    sprintf(body, "%s<p>%s: %s\r\n", body, longmsg, filename.c_str());
+    sprintf(body, "%s<hr><em>The Tiny Web server</em>\r\n", body);
+
+    /* Print the HTTP response */
+    sprintf(write_buffer, "HTTP/1.0 %s %s\r\n", errnum, shortmsg);
+    sprintf(write_buffer, "%sContent-type: text/html\r\n", write_buffer);
+    sprintf(write_buffer, "%sContent-length: %d\r\n\r\n", write_buffer, (int)strlen(body));
+    send_response();
+    write_buffer = body;
+    send_response();
+
+}
+
+
+// 处理客户端请求的入口函数
+void http_process::process(){
+    if(std::string(read_buffer).size() == 0)
+        return;
+    // 暂时只支持get方法
+    if(strcasecmp(request.method.c_str(), "GET")){
+        clienterror("501", "NOT Implemented","Server donesn't implement this method!");
+        return;
+    }
+
+    int is_static = parse_uri();
+    struct stat sbuf;
+    // 如果请求的文件不存在则发送错误消息
+    if(stat(filename.c_str(), &sbuf) < 0){
+        clienterror("404", "Not Found","Server couldn't find this file!");
+        return;
+    }
+
+    if(is_static){
+        if(! (S_ISREG(sbuf.st_mode)) || !(S_IRUSR && sbuf.st_mode)){
+            clienterror("403","Forbidden", "Server can't read the file!");
+            return ;
+        }
+        serve_static(sbuf.st_size);
+    }
+
+}
+
+
+

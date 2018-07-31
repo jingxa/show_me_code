@@ -59,7 +59,79 @@ void BucketSort(vector<int>& nums, int n, int max){
 /*
 	5. 基数排序
 	
+	// https://www.cnblogs.com/skywang12345/p/3603669.html
+	基数排序(Radix Sort)是桶排序的扩展，
+	它的基本思想是：将整数按位数切割成不同的数字，然后按每个位数分别比较。
+	具体做法是：将所有待比较数值统一为同样的数位长度，数位较短的数前面补零。
+	然后，从最低位开始，依次进行一次排序。这样从最低位排序一直到最高位排序
+	完成以后, 数列就变成一个有序序列.
+	
+	即：
+	1. 按照个位数进行排序。
+	2. 按照十位数进行排序。
+	3. 按照百位数进行排序。
+	
+	--- 每次排序使用桶排序
+	函数：
+		1. get_max : 获取最大位数
+		2. bucket_Sort: 桶排序
+		3. radixSort: 基数排序
+		
 */
+
+int get_max(int a[], int n){
+	int i, max = INT_MIN;
+	for(i=0;i<n;i++){
+		if(a[i] > max)
+			max = a[i];
+	}
+	return max;
+}
+
+// 位数 桶排序
+// exp:  1,10,100, ...（个，十，百）
+void bucket_Sort(int a[], int n, int exp){
+	int outputs[n];
+	int i;
+	int buckets[10]={0};	// 位数 0~9
+	
+	int j,last;
+	
+	// 存储到buckets中
+	for(i=0;i<n;i++){
+		j = (a[i] /exp)%10 ;
+		buckets[j]++;
+	}
+	
+	// bucket[i] 存储着 bucket[i+1] 的开始位置
+	for(i=1;i<10;i++)
+		buckets[i] = buckets[i-1]+buckets[i];
+	
+	for(i=n-1;i>=0;i--){
+		j = (a[i] /exp)%10 ;
+		last = -- buckets[a[j]];  // a[i] 元素的最后一个位置
+		outputs[i] = a[i];
+	}
+	
+	for(i=0;i<n;i++) // 拷贝回去
+	a[i] = outputs[i];
+	
+}
+
+// 基数排序
+void radixSort(int a[],int n){
+	int exp;
+	int max = get_max(a,n);   // 最大值
+	
+	// 从个位 到 最高位进行排序
+	for(exp = 1; max /exp > 0;exp *=10 )
+		bucket_Sort(a, n , exp);
+	
+}
+
+
+
+
 
 
 
