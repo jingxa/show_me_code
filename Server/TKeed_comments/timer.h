@@ -25,11 +25,23 @@ extern size_t	tk_current_msec;
 
 
 /*  定时器相关函数 */
+
+//初始化时间
 int tk_timer_init();
+
+// 寻找时间戳
 int tk_find_timer();
+
+// 处理超时
 void tk_handle_expire_timers();
+
+// 新增时间戳
 void tk_add_timer(tk_http_request_t *request, size_t timeout, timer_handler_pt handler);
+
+// 删除时间戳
 void tk_del_timer(tk_http_request_t *request);
+
+// 时间戳比较
 int timer_comp(void *ti, void *tj);
 
 
