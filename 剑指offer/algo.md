@@ -391,25 +391,296 @@ void reOrderArray(vector<int> &array) {
 ---
 
 # 22. 链表中倒数第 K 个结点
+
+```
+    ListNode* FindKthToTail(ListNode* head, unsigned int k) {
+    
+        if(!head)
+            return nullptr;
+        ListNode* p = head;
+        
+        int cnt = 0;
+        while(p){
+            p = p->next;
+            cnt++;
+        }
+        int rm = cnt -k;
+        if(rm < 0)
+            return nullptr;
+        
+        p = head;
+        while(rm-- >0)
+            p = p->next;
+        
+        return p;
+ 
+    }
+```
+
 ---
 # 23. 链表中环的入口结点
+> 假设x为环前面的路程
+> a为环入口到相遇点的路程, c为环的长度
+> 当快慢指针相遇的时候：
+> 此时慢指针走的路程为Sslow = x + m * c + a
+> 快指针走的路程为Sfast = x + n * c + a
+> 2 Sslow = Sfast
+> 2 * ( x + m*c + a ) = (x + n *c + a)
+> 从而可以推导出：
+> x = (n - 2 * m )*c - a
+> = (n - 2 *m -1 )*c + c - a
+> 即环前面的路程 = 数个环的长度（为可能为0） + c - a
+
+
+
+```
+class Solution {
+public:
+    ListNode* EntryNodeOfLoop(ListNode* head)
+    {
+        if( ! head || head->next == nullptr)
+            return nullptr;
+        
+        ListNode* fast, *slow;
+        
+        slow = head->next;
+        fast = head->next->next;
+        
+        while(fast && fast->next  && fast != slow){
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        
+        if(fast == nullptr)  // 无环
+            return nullptr;
+        
+        fast = head;
+        while(fast != slow)
+        {
+            fast = fast->next;
+            slow = slow->next;
+        }
+        return fast;
+    }
+};
+```
+
+
 ---
 # 24. 反转链表
+
+```
+class Solution {
+public:
+    ListNode* ReverseList(ListNode* head) {
+        if( head == nullptr || head->next == nullptr)
+            return head;
+        
+        ListNode* new_head = new ListNode(0);
+        ListNode* cur ;
+        while(head){
+            cur = head->next;
+            head->next = new_head->next;
+            new_head->next = head;
+            head = cur;
+        }
+        head = new_head->next;
+        
+        delete new_head;
+        return head;
+        
+    }
+};
+
+// 递归
+
+```
 
 ---
 # 25. 合并两个排序的链表
 
+```
+class Solution {
+public:
+    ListNode* Merge(ListNode* head1, ListNode* head2)
+    {
+        if(head1 == nullptr)
+            return  head2;
+        else if(head2 == nullptr)
+            return head1;
+        
+        if(head1->val < head2->val){
+            head1->next = Merge(head1->next, head2);
+            return head1;
+        }
+        else{
+            head2->next = Merge(head1, head2->next);
+            return head2;
+        }
+
+    }
+};
+```
 ---
 # 26. 树的子结构
+```
+class Solution {
+public:
+    bool HasSubtree(TreeNode* root1, TreeNode* root2)
+    {
+        if(! root1  || !root2 )
+            return false;
+        return isequal(root1,root2)|| isequal(root1->left,root2) || isequal(root1->right, root2);
+
+    }
+    
+    bool isequal(TreeNode* root1, TreeNode* root2){
+        if (root2 == nullptr)
+            return true;
+        if (root1 == nullptr)
+            return false;
+        if(root1->val != root2->val)
+            return false;
+        
+        return isequal(root1->left, root2->left) && isequal(root1->right, root2->right);
+
+    }
+};
+```
+
 ---
 # 27. 二叉树的镜像
+- 先序遍历或者后序遍历
+
+```
+class Solution {
+public:
+    void Mirror(TreeNode *root) {
+        if(!root)
+            return;
+        if(root->left)
+            Mirror(root->left);
+        if(root->right)
+            Mirror(root->right);
+        
+        TreeNode* tmp = root->left;
+        root->left = root->right;
+        root->right = tmp;
+    }
+};
+```
+
 ---
 # 28 对称的二叉树
+
+```
+class Solution {
+public:
+    bool isSymmetrical(TreeNode* root)
+    {
+        if(!root)
+            return true;
+        
+        return issymmetric(root->left, root->right);
+        
+        
+    
+    }
+    
+   bool issymmetric(TreeNode* left, TreeNode* right){
+       if(!left && ! right)
+           return true;
+       if(!left || !right)
+           return false;
+       if(left->val != right->val)
+           return false;
+        
+       return issymmetric(left->left, right->right) && issymmetric(left->right, right->left);
+   }
+
+};
+```
 ---
 # 29. 顺时针打印矩阵
 
+- 考虑最后两个循环的单行单列问题
+```
+class Solution {
+public:
+    vector<int> printMatrix(vector<vector<int> > matrix) {
+        vector<int> res;
+        if(matrix.empty())
+            return res;
+        int r2 = matrix.size()-1;  
+        int c2 = matrix[0].size()-1;
+        int r1=0;
+        int c1=0;
+        int i;
+        
+       while(r1<=r2 && c1<= c2){
+           for(i=c1;i<=c2;i++){  // 右行
+               res.push_back(matrix[r1][i]);
+           }
+     
+           for(i = r1+1; i<= r2;i++){  // 下行
+               res.push_back(matrix[i][c2]);
+           }
+            
+           // 后两种防止单列情况
+           if(r1!=r2)  // 单行
+               for(i = c2-1; i>=c1; i--){  // 左行
+                   res.push_back(matrix[r2][i]);
+               }
+            if(c1!=c2)  // 单列
+               for(i=r2-1; i>r1;i--){ // 上行
+                   res.push_back(matrix[i][c1]);
+               }
+           r1++;c1++;r2--;c2--;
+
+       }
+        return res;
+        
+    }
+};
+```
+
+
+
 ---
 # 30. 包含 min 函数的栈
+
+```
+class Solution {
+public:
+    void push(int value) {
+           if(minstack.empty())
+               minstack.push(value);
+            else if(value < minstack.top()){
+                minstack.push(value);
+            }
+        datastack.push(value);
+        
+        
+    }
+    void pop() {
+
+        if(datastack.top() == minstack.top())
+            minstack.pop();
+        datastack.pop();
+        
+    }
+    int top() {
+        return datastack.top();
+        
+    }
+    int min() {
+        return minstack.top();
+    }
+private:
+    stack<int> datastack;
+    stack<int> minstack;
+};
+```
 
 ---
 # 31. 栈的压入、弹出序列
