@@ -685,12 +685,151 @@ private:
 ---
 # 31. 栈的压入、弹出序列
 
+- 使用一个栈模拟
 
+```
+class Solution {
+public:
+    bool IsPopOrder(vector<int> in,vector<int> out) {
+        if(in.empty() && !out.empty() || ( !in.empty() && out.empty() ))
+            return false;
+        stack<int> sin;
+        int index = 0;
+        int len = out.size();
+        for(int i : in){
+            sin.push(i);
+            while(index < len && sin.top() == out[index])
+            {
+                sin.pop();
+                index++;
+            }
+        }
+        return sin.empty();
+        
+    }
+};
+```
 
-
-32.1 从上往下打印二叉树
+---
+# 32.1 从上往下打印二叉树
+- 使用队列
+```
+class Solution {
+public:
+    vector<int> PrintFromTopToBottom(TreeNode* root) {
+        vector<int> res;
+        if(!root)
+            return res;
+        deque<TreeNode*> d;
+        d.push_back(root);
+        TreeNode* cur;
+        while(!d.empty()){
+            cur = d.front();
+            res.push_back(cur->val);
+            if(cur->left)
+                d.push_back(cur->left);
+            if(cur->right)
+                d.push_back(cur->right);
+            d.pop_front();
+        }
+        return res;
+        
+    }
+};
+```
+---
 32.2 把二叉树打印成多行
-32.3 按之字形顺序打印二叉树
+- 及时读取队列长度
+
+```
+class Solution {
+public:
+        vector<vector<int> > Print(TreeNode* root) {
+            vector<vector<int>> res;
+            if(!root)
+                return res;
+           deque<TreeNode*> d;
+            d.push_back(root);
+           TreeNode* cur;
+           int len =0;
+           while(! d.empty()){
+               vector<int> tmp;
+               len = d.size();
+               for(int i=0;i<len;i++){
+                    cur = d.front();
+                    tmp.push_back(cur->val);
+                    if(cur->left)
+                        d.push_back(cur->left);
+                    if(cur->right)
+                        d.push_back(cur->right);
+                    d.pop_front();  
+               }
+               res.push_back(tmp);
+           }
+            return res;
+        }
+    
+};
+```
+
+---
+# 32.3 按之字形顺序打印二叉树
+
+- 使用两个栈模拟左右顺序
+- 记录下行号，逆序就将vector,逆序一下
+
+```
+class Solution {
+public:
+    vector<vector<int> > Print(TreeNode* root) {
+        vector<vector<int>> res;
+        if(!root)
+            return res;
+        stack<TreeNode*> left;
+        stack<TreeNode*> right;
+        bool flag = false;
+        TreeNode* cur;
+        
+        left.push(root);
+        
+        while(!left.empty() || !right.empty()){ // 有一个不为空
+            vector<int> tmp;
+            while(! left.empty()){
+                cur = left.top();
+                tmp.push_back(cur->val);
+                if(cur->left)
+                    right.push(cur->left);
+                if(cur->right)
+                    right.push(cur->right);  // 后进先出
+                left.pop();
+            }
+            res.push_back(tmp);
+            
+            vector<int> tmp2;
+            while(!right.empty()){
+                 cur = right.top();
+                 tmp2.push_back(cur->val);
+                if(cur->right)
+                    left.push(cur->right);
+                if(cur->left)
+                    left.push(cur->left);  // 后进先出
+                right.pop();
+            }
+            
+            if(!tmp2.empty())
+                res.push_back(tmp2);
+
+        }
+        
+        return res;
+  
+        
+    }
+    
+};
+```
+
+---
 33. 二叉搜索树的后序遍历序列
 34. 二叉树中和为某一值的路径
 35. 复杂链表的复制
