@@ -36,7 +36,7 @@ int tk_pq_delmin(tk_pq_t *tk_pq);
 int tk_pq_insert(tk_pq_t *tk_pq, void *item);
 
 
-// 
+// 调整存储空间
 int tk_pq_sink(tk_pq_t *tk_pq, size_t i);
 
 

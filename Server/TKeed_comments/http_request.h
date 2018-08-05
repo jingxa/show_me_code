@@ -82,7 +82,7 @@ typedef struct tk_http_header{
 }tk_http_header_t;
 
 
-// 头部处理函数
+// 头部处理函数指针
 typedef int (*tk_http_header_handler_pt)(tk_http_request_t* request, tk_http_out_t* out, char* data, int len);
 
 // 头部处理结构体
@@ -91,6 +91,9 @@ typedef struct tk_http_header_handle{
     tk_http_header_handler_pt handler;    // 函数指针
 }tk_http_header_handle_t;
 
+
+
+// 头部构成数组【查看.c文件】
 extern tk_http_header_handle_t tk_http_headers_in[];
 
 
@@ -112,15 +115,6 @@ int tk_init_request_t(tk_http_request_t* request, int fd, int epoll_fd, char* pa
 
 // 初始化响应头结构
 int tk_init_out_t(tk_http_out_t* out, int fd);
-
-
-//  删除请求头结构
-int tk_free_request_t(tk_http_request_t *request);
-
-
-// 删除响应头部结构
-int tk_free_out_t(tk_http_out_t *out);
-
 
 
 

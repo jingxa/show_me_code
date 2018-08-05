@@ -23,7 +23,7 @@ typedef struct list_head
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
 #define container_of(ptr, type, member) ({                      \
-        const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
+        const typeof( ((type *)0)->member ) *__mptr = (ptr);    \  // typeof 类型推导
         (type *)( (char *)__mptr - offsetof(type,member) );     \
 })
 

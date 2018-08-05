@@ -937,9 +937,102 @@ public:
 ```
 
 ---
-36. 二叉搜索树与双向链表
-37. 序列化二叉树
-38. 字符串的排列
+# 36. 二叉搜索树与双向链表
+
+
+```
+class Solution {
+public:
+    TreeNode* Convert(TreeNode* pRootOfTree)
+    {
+            if (pRootOfTree == NULL)
+            return NULL;
+            inorder(pRootOfTree);
+            return head;
+        
+    }
+    TreeNode* head= NULL,*pre =NULL;
+    
+    void inorder(TreeNode* root){
+        if(!root)
+            return;
+        inorder(root->left);
+        root->left = pre;    //前置
+        if(pre)
+            pre->right = root;
+        pre = root;
+        if(!head)
+            head = root;
+        inorder(root->right);
+        
+        
+    }
+};
+```
+
+---
+# 37. 序列化二叉树
+
+```
+    char* Serialize(TreeNode *root) {
+       if(root == NULL)
+           return NULL;
+        string str;
+        Serialize(root, str);
+        char *ret = new char[str.length() + 1];
+        int i;
+        for(i = 0; i < str.length(); i++){
+            ret[i] = str[i];
+        }
+        ret[i] = '\0';
+        return ret;
+    }
+    void Serialize(TreeNode *root, string& str){
+        if(root == NULL){
+            str += '#';
+            return ;
+        }
+        string r = to_string(root->val);
+        str += r;
+        str += ',';
+        Serialize(root->left, str);
+        Serialize(root->right, str);
+    }
+     
+    TreeNode* Deserialize(char *str) {
+        if(str == NULL)
+            return NULL;
+        TreeNode *ret = Deserialize(&str);
+ 
+        return ret;
+    }
+    TreeNode* Deserialize(char **str){//由于递归时，会不断的向后读取字符串
+        if(**str == '#'){  //所以一定要用**str,
+            ++(*str);         //以保证得到递归后指针str指向未被读取的字符
+            return NULL;
+        }
+        int num = 0;
+        while(**str != '\0' && **str != ','){
+            num = num*10 + ((**str) - '0');
+            ++(*str);
+        }
+        TreeNode *root = new TreeNode(num);
+        if(**str == '\0')
+            return root;
+        else
+            (*str)++;
+        root->left = Deserialize(str);
+        root->right = Deserialize(str);
+        return root;
+    }
+
+```
+
+---
+# 38. 字符串的排列
+
+
+---
 39. 数组中出现次数超过一半的数字
 40. 最小的 K 个数
 41.1 数据流中的中位数
