@@ -830,9 +830,113 @@ public:
 ```
 
 ---
-33. 二叉搜索树的后序遍历序列
-34. 二叉树中和为某一值的路径
-35. 复杂链表的复制
+# 33. 二叉搜索树的后序遍历序列
+- 二叉搜索树：left < root < right
+
+```
+class Solution {
+public:
+    bool VerifySquenceOfBST(vector<int> sequence) {
+        if(sequence.empty())
+            return false;
+        
+        return isBST(sequence,0,sequence.size()-1);
+    }
+    
+    
+    bool isBST(vector<int> s, int start, int end){
+        if(end - start <=1)  // 一个节点或者含一个子节点
+            return true;
+        int root = s[end];  //后序
+        int cur = start;
+        
+        // 查找左子树
+        while(cur < end && s[cur] < root)
+            cur++;
+        for(int i= cur;i<end;i++){  // 右子树存在小于root的值
+            if(s[i]< root)
+                return false;
+        }
+        return isBST(s,start,cur-1) && isBST(s,cur,end-1);
+    }
+};
+```
+
+
+
+---
+# 34. 二叉树中和为某一值的路径
+
+```
+class Solution {
+public:
+    vector<vector<int> > FindPath(TreeNode* root,int expectNumber) {
+       vector<int> tmp;
+        tracking(root, expectNumber,tmp);
+        return res;
+        
+    }
+    vector<vector<int>> res;
+    
+    void tracking(TreeNode* root, int sum , vector<int> tmp){    // 使用赋值传值
+        if(! root || sum<0) return;
+        sum -= root->val;
+        tmp.push_back(root->val);
+        if(sum == 0 && root->left == NULL && root->right == NULL)
+            res.push_back(tmp);
+        else{
+            tracking(root->left, sum,tmp);
+            tracking(root->right, sum, tmp);
+        }
+    }
+};
+```
+
+---
+
+# 35. 复杂链表的复制
+- 在每一个节点后面复制一个节点，指针同样指向复制节点
+
+```
+class Solution {
+public:
+    RandomListNode* Clone(RandomListNode* pHead)
+    {
+        if(!pHead)
+            return NULL;
+        // 对每个节点进行复制
+        RandomListNode* cur = pHead;
+        while(cur){
+            RandomListNode* tmp = new RandomListNode(cur->label);    // 新建节点
+            tmp->next = cur->next;
+            cur->next = tmp;
+            cur = tmp->next;
+        }
+        
+        // random节点
+        cur = pHead;
+        while(cur){
+            RandomListNode* tmp = cur->next;
+            if(cur->random)
+                tmp->random = cur->random->next;  // 指向复制节点
+            cur = tmp->next;
+        }
+        
+        // 分开
+        cur = pHead;
+        RandomListNode* head = cur->next; //复制节点的头结点
+        while (cur->next != NULL) {
+        RandomListNode* next = cur->next;
+        cur->next = next->next;
+        cur = next;
+        }
+        
+        return head;
+    }
+};
+```
+
+---
 36. 二叉搜索树与双向链表
 37. 序列化二叉树
 38. 字符串的排列
