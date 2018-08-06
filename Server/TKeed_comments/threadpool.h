@@ -23,7 +23,7 @@ typedef struct threadpool{
     int thread_count;    // 线程数 
     int queue_size;    // 任务链表长
     int shutdown;     // 关机模式
-    int started;
+    int started;       // 运行线程数量
 }tk_threadpool_t;
 
 // 线程错误状态
@@ -50,15 +50,11 @@ typedef enum{
 tk_threadpool_t* threadpool_init(int thread_num);
 
 //添加任务
-int threadpool_add(tk_threadpool_t* pool, void (*func)(void *), void* arg);
+int threadpool_add(tk_threadpool_t *pool, void (*func)(void *), void* arg);
 
 // 回收线程池资源
-int threadpool_destroy(tk_threadpool_t* pool, int gracegul);
+int threadpool_destroy(tk_threadpool_t *pool, int gracegul);
 
-// 释放线程池及任务
-
-
-// 工作线程
 
 
 #endif
