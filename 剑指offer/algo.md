@@ -1544,18 +1544,450 @@ public:
 
 
 ---
-51. 数组中的逆序对
-52. 两个链表的第一个公共结点
-53 数字在排序数组中出现的次数
-54. 二叉搜索树的第 K 个结点
-55.1 二叉树的深度
-55.2 平衡二叉树
-56. 数组中只出现一次的数字
-57.1 和为 S 的两个数字
-57.2 和为 S 的连续正数序列
-58.1 翻转单词顺序列
-58.2 左旋转字符串
-59. 滑动窗口的最大值
+# 51. 数组中的逆序对
+- 使用归并排序，每一次交换，统计两个下标差
+
+```
+class Solution {
+    vector<int> tmp;
+    int cnt=0;
+
+    
+public:
+    int InversePairs(vector<int> data) {
+        int len = data.size();
+        tmp.resize(len);
+        mergesort(data,0,len-1);
+       return (int) (cnt % 1000000007); 
+
+
+    }
+    
+
+void mergesort(vector<int>& nums,int l, int h){
+    if (h - l < 1)
+        return;
+    int m = l + (h - l) / 2;
+    mergesort(nums, l, m);
+    mergesort(nums, m + 1, h);
+    twomerge(nums, l, m, h);
+
+}
+
+
+void twomerge(vector<int>& nums, int l, int m, int h){
+    int i = l, j = m + 1, k = l;
+    while (i <= m || j <= h) {
+        if (i > m)
+            tmp[k] = nums[j++];
+        else if (j > h)
+            tmp[k] = nums[i++];
+        else if (nums[i] < nums[j])
+            tmp[k] = nums[i++];
+        else {
+            tmp[k] = nums[j++];
+            cnt += m - i + 1;  // nums[i] >= nums[j]，说明 nums[i...mid] 都大于 nums[j]
+        }
+        k++;
+    }
+    for (k = l; k <= h; k++)
+        nums[k] = tmp[k];
+
+}
+
+};
+```
+
+---
+# 52. 两个链表的第一个公共结点
+- 设 A 的长度为 a + c，B 的长度为 b + c，
+- 其中 c 为尾部公共部分长度，可知 a + c + b = b + c + a。
+- A访问完访问B
+- B访问完访问A
+
+```
+class Solution {
+public:
+    ListNode* FindFirstCommonNode( ListNode* pHead1, ListNode* pHead2) {
+        ListNode* l1= pHead1, *l2 = pHead2;
+        while(l1 != l2){
+            l1 = (l1==nullptr)? pHead2 : l1->next;
+            l2 = (l2==nullptr)?pHead1 : l2->next;
+        }
+        return l1;
+        
+    }
+};
+```
+
+
+---
+# 53 数字在排序数组中出现的次数
+- 简单方法就是统计
+- 排序： 二分查找
+
+```
+class Solution {
+public:
+    int GetNumberOfK(vector<int> data ,int k) {
+        int first = binfind(data,k);
+        int last = binfind(data,k+1);
+        if(! data.empty() && data[first] == k)
+            return last - first;
+        return 0;
+        
+    }
+    
+    int binfind(vector<int> data, int k){
+        int len = data.size();
+        int l = 0 , h = len;
+        while(l < h){
+            int mid = (l+h-1)/2;
+            if(data[mid] >= k)
+                h = mid;
+            else 
+                l = mid+1;
+        }
+        return l;
+    }
+};
+```
+
+---
+# 54. 二叉搜索树的第 K 个结点
+- 中序遍历
+
+```
+class Solution {
+    TreeNode* res=nullptr;
+    int cnt=0;
+public:
+    TreeNode* KthNode(TreeNode* pRoot, int k)
+    {
+        inorder(pRoot, k);
+        return res;
+    }
+    
+    void inorder(TreeNode* root, int k){
+        if(!root || cnt >=k)
+            return;
+        inorder(root->left,k);
+        cnt ++;
+        if(cnt == k){
+            res = root;
+        }
+        inorder(root->right,k);
+    }
+
+    
+};
+```
+
+
+---
+# 55.1 二叉树的深度
+
+```
+class Solution {
+public:
+    int TreeDepth(TreeNode* pRoot)
+    {
+        if (! pRoot)
+            return 0;
+        return 1+ max(TreeDepth(pRoot->left), TreeDepth(pRoot->right));
+    
+    }
+};
+```
+
+
+---
+# 55.2 平衡二叉树
+- 左右子树相差为最多1
+
+```
+class Solution {
+public:
+    bool isBalanced = true;
+    bool IsBalanced_Solution(TreeNode* pRoot) {
+    height(pRoot);
+    return isBalanced;
+    }
+    
+    int height(TreeNode* root){
+        if (root == nullptr || !isBalanced)
+            return 0;
+        int left = height(root->left);
+        int right = height(root->right);
+        if (abs(left - right) > 1)
+            isBalanced = false;
+        return 1 + max(left, right);
+    }
+};
+
+```
+
+
+
+
+---
+# 56. 数组中只出现一次的数字
+- 两个相同的数异或为0 ，
+- 两个不用的数异或中至少有一位为0 ， 找到这一位
+- 然后 与数相与
+
+```
+class Solution {
+public:
+    void FindNumsAppearOnce(vector<int> nums,int* num1,int *num2) {
+        if(nums.empty())
+            return ;
+    int diff = 0;
+    for (int num : nums)
+        diff ^= num;
+    
+    int index = findBitOne(diff);
+
+    for (int num : nums) {
+        if (isBitOne(num, index))
+            num1[0] ^= num;
+        else
+            num2[0] ^= num;
+    }
+        
+    }
+    
+    
+    int findBitOne(int diff){   // 两个不同的数异或中的一位为1
+        int index =0;
+        while(index < 32 && (diff & 1) == 0 ){
+            diff =diff >> 1;
+            index++;
+        }
+        return index;
+    }
+    
+    bool isBitOne(int num, int index){  // 一个数 和两个数异或的值的某一位 相与
+        num >>= index;
+        if((num & 1) == 1) 
+            return true;
+        return false;
+    }
+};
+
+```
+
+
+
+
+---
+# 57.1 和为 S 的两个数字
+
+```
+class Solution {
+public:
+    vector<int> FindNumbersWithSum(vector<int> array,int sum) {
+        int l= 0, h = array.size() -1;
+        int cur=0;
+        vector<int> res;
+        while(l<h){
+            cur = array[l] + array[h];
+            if(cur < sum)
+                l++;
+            else if(cur > sum)
+                h --;
+            else{
+                res.push_back(array[l]);
+                res.push_back(array[h]);
+                break;
+            }
+        }
+        return res;
+    }
+};
+```
+
+
+
+---
+# 57.2 和为 S 的连续正数序列
+
+- 从最小值开始，保存开始 l 和结束 r 两个变量，
+- 如果和小于sum,r 向后增加，如果大于sum , 减去 l的值 ,提高 l
+
+- 最多序列 r 不超过 和的一半 加 1；
+
+```
+class Solution {
+public:
+    vector<vector<int> > FindContinuousSequence(int sum) {
+        vector<vector<int>> res;
+       // 从小开始增加
+        int l =1,r=1,smax = 1;
+        while(r < (sum/2 +2)){
+            r++;
+            smax +=r;
+            while(smax > sum){ // 总和大于sum
+                smax -= l;
+                l++;  // 提高小值 试试
+            }
+            if(smax == sum  && l!=r){
+                vector<int> tmp;
+                for(int i=l; i<=r;i++)
+                    tmp.push_back(i);
+                res.push_back(tmp);
+            }
+        }
+        return res;
+        
+    }
+   
+};
+
+```
+---
+# 58.1 翻转单词顺序列
+- 使用额外空间
+
+```
+class Solution {
+public:
+    string ReverseSentence(string str) {
+        stack<string> res;
+        int cur=0;
+
+          for(int i=0;i<str.size()+1;i++)
+          {
+              if(' ' == str[i] || '\t' == str[i] || i==str.size())
+              {
+                  res.push(string(str,cur,i-cur));
+                  cur = i+1;
+              }
+
+
+          }
+        string s;
+        while(!res.empty()){
+            s+=res.top();
+            s+=' ';
+            res.pop();
+        }
+        return s.substr(0,str.size());
+    }
+};
+
+```
+
+```
+class Solution {
+public:
+    string ReverseSentence(string str) {
+        // 对每个单词进行旋转
+        int len = str.size();
+        int begin = 0;
+        int end = 0;
+        for(int i=0;i<=len; i++){
+            if( i== len || str[i] == ' ' || str[i] ==  '\t'){
+                end = i;
+                reverseOne(str, begin, end-1);
+                begin = i+1;
+            }  
+        }
+        
+        reverseOne(str, 0, len-1);
+        
+        return str;
+    }
+    
+    // 旋转每个单词
+    void reverseOne(string& str, int i, int j){
+        while(i<j)
+            swap(str[i++],str[j--]);
+    }
+    
+};
+```
+
+
+
+
+---
+# 58.2 左旋转字符串
+
+```
+class Solution {
+public:
+    string LeftRotateString(string str, int k) {
+        if(str.empty())return "";
+        string s=str;
+        myreverse(s,0,k-1);
+        myreverse(s,k,str.size()-1);
+        myreverse(s,0,str.size()-1);
+        return s;
+    }
+    
+    void myreverse(string& s,int l, int h){  // [l,h]
+         while(l<h)
+             swap(s[l++],s[h--]);
+        }              
+};
+```
+
+
+---
+# 59. 滑动窗口的最大值
+
+```
+class Solution {
+public:
+    vector<int> maxInWindows(const vector<int>& num, unsigned int size)
+    {    
+        vector<int> res;
+         int len = num.size();
+         if(num.empty() || size <1 || len < size)
+             return res;
+        
+        int max=0,cur=0;
+        int i=0;
+        for(int i=0;i<size;i++){   // 第一个窗口
+            if(max< num[i]){
+                max = num[i];
+                cur = i;
+            }
+        }
+        res.push_back(max);
+        for(int i=size;i<len;i++){
+            if(cur < i -size +1)   // 前一个窗口的最大值
+                findMax(num,i-size+1,i,max,cur);
+            else if(max < num[i])
+            {
+                max = num[i];
+                cur = i;
+            }
+            
+            res.push_back(max);
+        }
+        
+        
+        return res;
+        
+    }
+    
+    // 遍历一个窗口寻找最大值
+    void findMax(const vector<int>& num, int l, int r,int& max,int& cur){  
+        max =0, cur = 0;
+        for(int i=l;i<=r;i++){
+            if(max< num[i]){
+                max = num[i];
+                cur = i;
+            }
+        }
+    }
+    
+};
+```
+
+---
 60. n 个骰子的点数
 61. 扑克牌顺子
 62. 圆圈中最后剩下的数
