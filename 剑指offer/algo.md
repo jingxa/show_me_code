@@ -1988,10 +1988,109 @@ public:
 ```
 
 ---
-60. n 个骰子的点数
-61. 扑克牌顺子
-62. 圆圈中最后剩下的数
-63. 股票的最大利润
+# 60. n 个骰子的点数
+
+```
+class Solution {
+public:
+    /**
+     * @param n an integer
+     * @return a list of pair<sum, probability>
+     */
+    vector<pair<int, double>> dicesSum(int n) {
+	 constexpr int face = 6;
+	 int num = face * n;
+	vector<vector<long>> dp(n+1, vector<long>(num+1));
+
+	for(int i=1;i<=face;i++)  // 一个骰子的点数数量
+		dp[1][i] = 1;
+	
+	for(int i=2;i<=n;i++){   // 骰子数量
+		for(int j=i;j<=num;j++){   // 骰子点数和
+			for(int k=1;k<=face && k<=j;k++)  // 当前和 == i-1个点的数量
+				dp[i][j] += dp[i-1][j-k];
+		}
+	}
+	
+	double totalnum = pow(6,n);
+	vector<pair<int, double>> res;
+	
+	for(int i=n;i<=num;i++){
+		res.push_back(pair<int,double>(i,dp[n][i]/totalnum));
+	}
+		
+		
+	return res;	
+    }
+};
+```
+---
+# 61. 扑克牌顺子
+
+```
+class Solution {
+public:
+    bool IsContinuous( vector<int> numbers ) {
+        	if(numbers.size() != 5)
+		return false;
+	
+	sort(numbers.begin(),numbers.end());
+	int cnt= 0;  // 统计癞子
+	for(auto i: numbers){
+		if(i ==0)
+			cnt ++;
+	}
+	
+	for(int i=cnt+1;i<numbers.size();i++){ // 从癞子第二个后面开始
+		if(numbers[i-1] == numbers[i])  // 同样一张牌
+			return false;
+		cnt -= (numbers[i] - numbers[i-1] -1);  // 癞子补全
+	}
+	
+	return cnt>=0;
+    }
+};
+```
+
+
+---
+# 62. 圆圈中最后剩下的数
+
+```
+class Solution {
+public:
+    int LastRemaining_Solution(int n, int m)
+    {
+        if(n<=0 || m<=0)
+            return -1;
+        int i=-1;
+        int cnt=0;
+        int N=n;
+        vector<int> res(n,1);
+        while(n >0){
+            i++;          //指向上一个被删除对象的下一个元素。
+            if(i>=N) i=0;  //模拟环。
+            if(res[i] == -1) continue; //跳过被删除的对象。
+            cnt++;                     //记录已走过的。
+            if(cnt==m) {               //找到待删除的对象。
+                res[i]=-1;
+                cnt = 0;
+                n--;
+            }        
+        }
+        return i;//返回跳出循环时的i,即最后一个被设置为-1的元素
+
+    }
+};
+```
+
+---
+# 63. 股票的最大利润
+```
+
+```
+
+---
 64. 求 1+2+3+...+n
 65. 不用加减乘除做加法
 66. 构建乘积数组
