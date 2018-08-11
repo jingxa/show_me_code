@@ -2087,17 +2087,133 @@ public:
 ---
 # 63. 股票的最大利润
 ```
-
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if(prices.empty())
+            return 0;
+        int pmin=prices[0],pmax = 0;
+        
+        for(int i=1;i<prices.size();i++){
+            pmin = min(pmin, prices[i]);
+            pmax = max(pmax, prices[i] - pmin);
+        }
+        return pmax;
+    }
+};
 ```
 
 ---
-64. 求 1+2+3+...+n
-65. 不用加减乘除做加法
-66. 构建乘积数组
-67. 把字符串转换成整数
-68. 树中两个节点的最低公共祖先
+# 64. 求 1+2+3+...+n
+```
+class Solution {
+public:
+    int Sum_Solution(int n) {
+        int sum=n;
+        bool b= (n>0)&&((sum +=Sum_Solution(n-1)) >0 );
+        return sum;
+    }
+};
+```
+
+---
+# 65. 不用加减乘除做加法
+```
+class Solution {
+public:
+    int Add(int num1, int num2)
+    {
+        int n = num1 ^ num2;
+        int m = (num1 & num2)<<1;
+        while(m){
+            num1 = n ^ m;
+            num2= (n& m)<<1;
+            n = num1;
+            m = num2;
+        }
+        return n|m ;
+    }
+};
+```
+
+---
+# 66. 构建乘积数组
+- 除了本身坐标，其他都要乘
 
 
+```
+class Solution {
+public:
+    vector<int> multiply(const vector<int>& A) {
+        vector<int> res;
+        if(A.size() == 0)
+            return res;
+        res.resize(A.size(),1);
+        int product =1;
+        for(int i=0;i<A.size();i++)
+        {
+            res[i] = product;
+            product *= A[i];
+        }
+        
+        product =1;
+        for(int i=A.size()-1;i>=0;i--){
+            res[i] *= product;
+            product *=A[i]; 
+        }
+       return res;     
+    }
+};
+```
+
+---
+# 67. 把字符串转换成整数
+
+
+```
+class Solution {
+public:
+    int StrToInt(string str) {
+        if(str.empty())
+            return 0;
+        int res =0;
+        int flag = true;
+        for(int i=0;i<str.size();i++){
+            if(i==0 && (str[i] == '+' ||str[i] == '-' )){
+                if(str[i] == '-')
+                    flag = false;
+                continue;
+            }
+            if('0'> str[i] || '9' < str[i])
+                return 0;
+            res = res*10 + (str[i] - '0');
+        }
+        return flag ? res : -res;
+    }
+};
+```
+---
+# 68. 树中两个节点的最低公共祖先
+
+```
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if(!root || root == p || root == q)
+            return root;
+        TreeNode* left = lowestCommonAncestor(root->left, p,q);
+        TreeNode* right = lowestCommonAncestor(root->right,p,q);
+        
+        if(left != nullptr && right != nullptr)
+            return root;
+        else if(left == nullptr)
+            return right;
+        else 
+            return left;
+        
+    }
+};
+```
 
 
 
