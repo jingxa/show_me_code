@@ -77,7 +77,137 @@ public:
 ```
 
 ## 1.3 345. Reverse Vowels of a String (Easy)
+- 逆转两个元音字母
 
 ```
 
+class Solution {
+public:
+    string reverseVowels(string s) {
+        if(s.empty())
+            return "";
+
+       // cout<<"start.."<<endl;
+        int l=0,r=s.size()-1;
+        while(l<r){
+            while(!res.count(s[l]))
+                l++;
+            while(!res.count(s[r]))
+                r--;
+            if(l<r)
+                swap(s[l++],s[r--]);
+            
+        }
+       // cout<<"s:"<<s<<endl;
+        return s;
+    }
+public:
+    set<char> res;
+    Solution(){
+        res.insert('a');
+        res.insert('A');
+        res.insert('e');
+        res.insert('E');
+        res.insert('i');
+        res.insert('I');
+        res.insert('o');
+        res.insert('O');
+        res.insert('U');
+        res.insert('u'); 
+    }
+    
+    
+    
+};
+
 ```
+
+## 1.4 680. Valid Palindrome II
+
+```
+class Solution {
+public:
+    bool validPalindrome(string s) {
+        if(s.empty() || s.size() ==1)
+            return true;
+        
+        int i=0, j= s.size()-1;
+        int cnt=0;
+        bool t = ispalin(s,i,j,cnt);
+
+        return t;
+
+    }
+    
+    
+    bool ispalin(string& s , int i, int j,int cnt){
+        if (cnt > 1)
+            return false;
+            if(i>j)
+            return true;
+
+        if(s[i] != s[j]){
+            cnt++;
+            return  ispalin(s,i+1,j,cnt) || ispalin(s,i,j-1,cnt);
+        }
+        else 
+            return ispalin(s,i+1,j-1,cnt);
+    }
+};
+```
+
+## 1.5 88. Merge Sorted Array (Easy)
+
+```
+class Solution {
+public:
+    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        if(m+n > nums1.size() || n==0)
+            return ;
+        int len = nums1.size()-1;
+        
+        if(m==0){
+            for(int i=0;i<n;i++)
+                nums1[i] = nums2[i];
+        }
+
+
+        int i=m-1,j=n-1;
+        while((i>=0 || j>=0) && len>=0 ){
+            if(i<0)
+            {
+                nums1[len] = nums2[j];
+                j--;
+            }else if(j<0)
+                break;
+            else if(nums1[i] >= nums2[j]){
+                nums1[len]= nums1[i];
+                i--;
+            }else{
+                nums1[len] = nums2[j];
+                j--;
+            }
+            len--;
+        }
+
+    }
+};
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
