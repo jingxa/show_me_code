@@ -19,6 +19,8 @@
 # 1 双指针
 ## 1.1 167. Two Sum II - Input array is sorted
 - [167. Two Sum II - Input array is sorted](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/description/)
+
+<details><summary>code</summary>
 ```
 class Solution {
 public:
@@ -48,8 +50,12 @@ public:
     }
 };
 ```
+</details>
+
 ## 1.2 633. Sum of Square Numbers[leetcode]
 
+
+<details><summary>code</summary>
 ```
 class Solution {
 public:
@@ -75,10 +81,12 @@ public:
     }
 };
 ```
+</details>
 
 ## 1.3 345. Reverse Vowels of a String (Easy)
 - 逆转两个元音字母
 
+<details><summary>code</summary>
 ```
 
 class Solution {
@@ -121,9 +129,12 @@ public:
 };
 
 ```
+</details>
+
 
 ## 1.4 680. Valid Palindrome II
 
+<details><summary>code</summary>
 ```
 class Solution {
 public:
@@ -155,9 +166,11 @@ public:
     }
 };
 ```
+</details>
 
 ## 1.5 88. Merge Sorted Array (Easy)
 
+<details><summary>code</summary>
 ```
 class Solution {
 public:
@@ -194,16 +207,193 @@ public:
 };
 
 ```
+</details>
+
+## 1.6 141. Linked List Cycle (Easy)
+
+<details><summary>code</summary>
+```
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        if(!head || head->next == nullptr)
+            return false;
+        ListNode* low , *fast;
+        low = head;
+        fast = low->next;
+        while(low && fast && fast->next){
+            if(low == fast)
+                return true;
+            low = low->next;
+            fast = fast->next->next;
+        }
+        return false;
+        
+    }
+};
+```
+</details>
+
+## 1.7 524. Longest Word in Dictionary through Deleting (Medium)
+
+<details><summary>code</summary>
+```
+class Solution {
+public:
+    string findLongestWord(string s, vector<string>& d) {
+        if(s.size() == 0 || d.size() == 0)
+            return "";
+        int maxlen=0;
+        int len1 = s.size();
+        int tmp=0;
+        int idx=-1;
+        sort(d.begin(),d.end());
+        for(int i=0;i<d.size();i++){
+            int len2 = d[i].size();
+            if(len1 < len2)
+                continue;
+            tmp = isstr(s, d[i]);
+            if(tmp == len2 && tmp > maxlen)
+            {
+                maxlen = tmp;
+                idx = i;
+             }
+        }
+        return idx== -1 ? "" : d[idx];
+        
+    }
+    
+    int  isstr(string s1, string s2){
+        int i=0,j=0;
+        while(i<s1.size() && j < s2.size()){
+            if(s1[i] == s2[j])
+                j++;
+            i++;
+        }
+        return j;
+    }
+    
+};
+```
+</details>
+
+
+# 2. 排序
+
+## 2.1 215. Kth Largest Element in an Array (Medium)
+
+<details><summary>code</summary>
+```
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        if(nums.size() == 0)
+            return 0;
+        
+        priority_queue<int> pq;
+        for(int n : nums){
+            pq.push(n);
+        }
+        
+        while( k>1)
+        {
+            pq.pop();
+            k--;
+        }
+        
+        return pq.top();
+        
+    }
+};
+
+```
+</details>
+
+
+## 2.2 347. Top K Frequent Elements (Medium)
+
+<details><summary>code</summary>
+```
+
+
+```
+</details>
+
+## 2.3
+
+<details><summary>code</summary>
+```
+```
+</details>
+
+## 2.4
+<details><summary>code</summary>
+```
+
+```
+</details>
 
 
 
+## 2.5
+
+<details><summary>code</summary>
+```
+```
+</details>
 
 
+## 2.6
+
+<details><summary>code</summary>
+```
+```
+</details>
+
+## 2.7
 
 
+<details><summary>code</summary>
+```
+```
+</details>
+
+## 2.8
 
 
+<details><summary>code</summary>
+```
+```
+</details>
 
+
+## 2.9
+
+<details><summary>code</summary>
+```
+```
+</details>
+
+
+## 2.10
+
+<details><summary>code</summary>
+```
+```
+</details>
+
+## 2.11
+
+<details><summary>code</summary>
+```
+```
+</details>
+
+## 2.12
+<details><summary>code</summary>
+```
+```
+</details>
 
 
 
