@@ -333,6 +333,12 @@ enum { floatPrec = 6, doublePrec = 10 };
 
 	- 消除两个对象交互时不必要的对象拷贝，节省运算存储资源，提高效率。
 	- 能够更简洁明确地定义泛型函数。
+	
+- [C++ 11 左值，右值，左值引用，右值引用，std::move, std::foward](https://blog.csdn.net/xiaolewennofollow/article/details/52559306)
+	
+	
+	
+	
 
 #### 引用折叠
 
@@ -678,7 +684,160 @@ int main()
 
 
 # 三、 STL
-## 24. 
+
+## 24. 内存
+#### 内存对齐的原则
+
+struct/class/union内存对齐原则有四个： 
+- 1).数据成员对齐规则：结构(struct)(或联合(union))的数据成员，第一个数据成员放在offset为0的地方，以后每个数据成员存储的起始位置要从该成员大小或者成员的子成员大小（只要该成员有子成员，比如说是数组，结构体等）的整数倍开始(比如int在３２位机为４字节, 则要从４的整数倍地址开始存储),基本类型不包括struct/class/uinon。 
+- 2).结构体作为成员:如果一个结构里有某些结构体成员,则结构体成员要从其内部"最宽基本类型成员"的整数倍地址开始存储.(struct a里存有struct b,b里有char,int ,double等元素,那b应该从8的整数倍开始存储.)。 
+- 3).收尾工作:结构体的总大小,也就是sizeof的结果,.必须是其内部最大成员的"最宽基本类型成员"的整数倍.不足的要补齐.(基本类型不包括struct/class/uinon)。 
+- 4).sizeof(union)，以结构里面size最大元素为union的size,因为在某一时刻，union只有一个成员真正存储于该地址
+
+#### c++ 初始化
+必须在构造函数初始化式里进行初始化的数据成员有哪些 
+- 1.类里面的任何成员变量在定义时是不能初始化的。 
+- 2.一般的数据成员可以在构造函数中初始化。 
+- 3.const数据成员必须在构造函数的初始化列表中初始化。 
+- 4.static要在类的定义外面初始化。 
+- 5.数组成员是不能在初始化列表里初始化的。 
+- 6.不能给数组指定明显的初始化。 
+- **类成员变量的初始化不是按照初始化表的顺序被初始化的，而是按照在类中声明的顺序被初始化的**
+
+
+#### 内存泄漏定位 
+- (1)在windows平台下通过CRT中的库函数进行检测； 
+- (2)在可能泄漏的调用前后生成块的快照，比较前后的状态，定位泄漏的位置 
+- (3)Linux下通过工具valgrind检测
+
+
+
+## 25.常用C库函数实现
+#### strcpy
+
+```
+char* strcpy(char* dst, const char* src){
+	assert((dst != NULL && (src != NULL));
+	char* tmp = dst;
+	
+	while((*dst++ = *src++) != '\0');
+	return tmp;
+}
+
+```
+- 考虑重叠
+
+```
+char* strcpy(char* dst, const char* src){
+	assert(dst != NULL && src != NULL);
+	char* ret = dst;
+	my_memecpy(dst, src, strlen(src)+1);
+	return ret;
+}
+
+char* my_memecpy(char *dst, char *src , int cnt){
+	assert( dst != NULL && src != NULL );
+	char *ret = dst;
+	if(dst >=src && dst <= src + cnt-1)
+	{
+		dst = dst + cnt-1;
+		src = src + cnt -1;
+		while(cnt -- )
+			*dst-- = *src--;
+	}else{
+	while(cnt--)
+		*dst++ = *src++;
+	}
+	return ret;
+	
+}
+
+
+```
+#### strncpy
+
+```
+char* strncpy(char *dst, const char *src, size_t n){
+	char *ret = dst;
+	size_t i=0;
+	while(n >0 && *src != '\0')
+	{
+		*dst++ = *src++;
+		n--;
+	}
+	while(n-->0)
+		*dst++ = '\0';
+	return ret;
+}
+
+
+```
+
+
+#### strcat
+- 把src所指字符串添加到dest结尾处(覆盖dest结尾处的'\0')。
+- src和dest所指内存区域不可以重叠且dest必须有足够的空间来容纳src的字符串。
+
+```
+char* strcat(char* dst, const char* src){
+
+	char* ret = dst;
+	while(*dst++ != '\0');
+	while(*src != '\0')
+		*dst++ = *src++;
+	*dst = '\0';
+	return ret;
+
+}
+```
+
+
+#### strncat
+
+```
+char* strncat (char *dst, const char* src , size_t n){
+	char* ret = dst;
+	size_t i, j;
+	for(j=0;dst[j] != '\0';++j);
+	for(i=0;i<n && src[i] != '0';)
+	{
+		dst[j++] = src[i++]; 
+	}
+	for(;i<n;i++)dst[j] = '\0';
+	return ret;
+}
+
+```
+
+#### strlen 
+
+```
+sizt_t strlen(const char* s)
+{
+	assert(str != NULL);
+    const char *eos = str;
+
+    while( *eos++ ) ; // eos 为'\0'后面一个地址
+
+    return( eos - str - 1 );
+	
+	
+}
+
+```
+
+## 26. STL 容器 vector
+
+#### emplace_back 和 push_back
+- [实战c++中的vector系列--知道emplace_back为何优于push_back吗？](https://blog.csdn.net/wangshubo1989/article/details/50357549)
+- 添加一个新元素到结束的容器。该元件是构成在就地，即没有复制或移动操作进行。
+- emplace_back 传递是容器中的T的参数，直接在vector中的空间中调用构造函数；
+- push_back 传递的是T的实例，需要复制或者移动操作；
+
+
+
+
+
 
 
 
@@ -694,3 +853,4 @@ int main()
 - [sizeof与strlen的区别](https://www.cnblogs.com/luori719/p/5218163.html)
 - [位域](https://www.cnblogs.com/pure/archive/2013/04/22/3034818.html)
 
+- [C++ 11 左值，右值，左值引用，右值引用，std::move, std::foward](https://blog.csdn.net/xiaolewennofollow/article/details/52559306)
