@@ -362,7 +362,7 @@ enum { floatPrec = 6, doublePrec = 10 };
 
 <details><summary>initializer_list use</summary>
 
-```
+```c++
 #include <iostream>
 #include <vector>
 #include <initializer_list>
@@ -717,7 +717,7 @@ struct/class/union内存对齐原则有四个：
 ## 25.常用C库函数实现
 #### strcpy
 
-```
+```c++
 char* strcpy(char* dst, const char* src){
 	assert((dst != NULL && (src != NULL));
 	char* tmp = dst;
@@ -729,7 +729,7 @@ char* strcpy(char* dst, const char* src){
 ```
 - 考虑重叠
 
-```
+```c++
 char* strcpy(char* dst, const char* src){
 	assert(dst != NULL && src != NULL);
 	char* ret = dst;
@@ -758,7 +758,7 @@ char* my_memecpy(char *dst, char *src , int cnt){
 ```
 #### strncpy
 
-```
+```c++
 char* strncpy(char *dst, const char *src, size_t n){
 	char *ret = dst;
 	size_t i=0;
@@ -780,7 +780,7 @@ char* strncpy(char *dst, const char *src, size_t n){
 - 把src所指字符串添加到dest结尾处(覆盖dest结尾处的'\0')。
 - src和dest所指内存区域不可以重叠且dest必须有足够的空间来容纳src的字符串。
 
-```
+```c++
 char* strcat(char* dst, const char* src){
 
 	char* ret = dst;
@@ -796,7 +796,7 @@ char* strcat(char* dst, const char* src){
 
 #### strncat
 
-```
+```c++
 char* strncat (char *dst, const char* src , size_t n){
 	char* ret = dst;
 	size_t i, j;
@@ -814,7 +814,7 @@ char* strncat (char *dst, const char* src , size_t n){
 #### strlen 
 
 
-```
+```c++
 sizt_t strlen(const char* s)
 {
 	assert(str != NULL);
@@ -843,20 +843,20 @@ sizt_t strlen(const char* s)
 	
 
 #### STL常用的容器有哪些以及各自的特点是什么?
-1.vector:底层数据结构为数组 ，支持快速随机访问。
-2.list:底层数据结构为双向链表，支持快速增删。
-3.deque:底层数据结构为一个中央控制器和多个缓冲区，详细见STL源码剖析P146，支持首尾（中间不能）快速增删，也支持随机访问。
-4.stack:底层一般用23实现，封闭头部即可，不用vector的原因应该是容量大小有限制，扩容耗时
-5.queue:底层一般用23实现，封闭头部即可，不用vector的原因应该是容量大小有限制，扩容耗时（stack和queue其实是适配器,而不叫容器，因为是对容器的再封装）
-6.priority_queue:的底层数据结构一般为vector为底层容器，堆heap为处理规则来管理底层容器实现
-7.set:底层数据结构为红黑树，有序，不重复。
-8.multiset:底层数据结构为红黑树，有序，可重复。 
-9.map:底层数据结构为红黑树，有序，不重复。
-10.multimap:底层数据结构为红黑树，有序，可重复。
-11.hash_set:﻿﻿﻿﻿底层数据结构为hash表，无序，不重复。
-12.hash_multiset:底层数据结构为hash表，无序，可重复 。
-13.hash_map :﻿﻿﻿﻿底层数据结构为hash表，无序，不重复。
-14.hash_multimap:底层数据结构为hash表，无序，可重复。 。
+1. vector:底层数据结构为数组 ，支持快速随机访问。
+2. list:底层数据结构为双向链表，支持快速增删。
+3. deque:底层数据结构为一个中央控制器和多个缓冲区，详细见STL源码剖析P146，支持首尾（中间不能）快速增删，也支持随机访问。
+4. stack:底层一般用23实现，封闭头部即可，不用vector的原因应该是容量大小有限制，扩容耗时
+5. queue:底层一般用23实现，封闭头部即可，不用vector的原因应该是容量大小有限制，扩容耗时（stack和queue其实是适配器,而不叫容器，因为是对容器的再封装）
+6. priority_queue:的底层数据结构一般为vector为底层容器，堆heap为处理规则来管理底层容器实现
+7. set:底层数据结构为红黑树，有序，不重复。
+8. multiset:底层数据结构为红黑树，有序，可重复。 
+9. map:底层数据结构为红黑树，有序，不重复。
+10. multimap:底层数据结构为红黑树，有序，可重复。
+11. hash_set:﻿﻿﻿﻿底层数据结构为hash表，无序，不重复。
+12. hash_multiset:底层数据结构为hash表，无序，可重复 。
+13. hash_map :﻿﻿﻿﻿底层数据结构为hash表，无序，不重复。
+14. hash_multimap:底层数据结构为hash表，无序，可重复。 。
 
 
 
@@ -923,18 +923,18 @@ sizt_t strlen(const char* s)
 双向开口的连续线性空间，没有容量概念，动态地以分段连续空间组合而成， 随时可增加新空间并链接起来（伪连续，负担落在迭代器身上） 
 使用中控器 map，存的指针，指向实际存储块 
 迭代器失效： 
-a. 在deque容器首部或者尾部插入元素不会使得任何迭代器失效； 
-b. 在其首部或尾部删除元素则只会使指向被删除元素的迭代器失效； 
-c. 在deque容器的任何其他位置的插入和删除操作将使指向该容器元素的所有迭代器失效。
+1. 在deque容器首部或者尾部插入元素不会使得任何迭代器失效； 
+2. 在其首部或尾部删除元素则只会使指向被删除元素的迭代器失效； 
+3. 在deque容器的任何其他位置的插入和删除操作将使指向该容器元素的所有迭代器失效。
 
 注意：除非必要，我们尽可能选择使用vector而非deque，因为deque的迭代器比vector迭代器复杂很多。对deque排序，为了提高效率，可先将deque复制到一个vector上排序，然后再复制回deque。
 
 deque采用一块map（不是STL的map容器）作为主控，其为一小块连续空间，其中每个元素都是指针，指向另一段较大的连续空间（缓冲区）。
 deque的迭代器包含4个内容：
-1）cur：迭代器当前所指元素
-2）first：此迭代器所指的缓冲区的头。
-3）last：缓冲区尾。
-4）node：指向管控中心。
+1. cur：迭代器当前所指元素
+2. first：此迭代器所指的缓冲区的头。
+3. last：缓冲区尾。
+4. node：指向管控中心。
 
 
 ## 30. stack 和 queue
@@ -960,27 +960,27 @@ deque的迭代器包含4个内容：
 
 #### 红黑树有什么性质？
 
-1）每个结点是红色或者黑色。
-2）根结点为黑色。
-3）叶结点为黑色的NULL结点。
-4）如果结点为红，其子节点必须为黑。
-5）任一结点到NULL的任何路径，所含黑结点数必须相同。
+1. 每个结点是红色或者黑色。
+2. 根结点为黑色。
+3. 叶结点为黑色的NULL结点。
+4. 如果结点为红，其子节点必须为黑。
+5. 任一结点到NULL的任何路径，所含黑结点数必须相同。
 
 - O(log n)
-- 
+
 
 
 #### map和set的3个问题。
 
-1）为何map和set的插入删除效率比其他序列容器高。
+1. 为何map和set的插入删除效率比其他序列容器高。
 
 因为不需要内存拷贝和内存移动
 
-2）为何map和set每次Insert之后，以前保存的iterator不会失效？
+2. 为何map和set每次Insert之后，以前保存的iterator不会失效？
 
 因为插入操作只是结点指针换来换去，结点内存没有改变。而iterator就像指向结点的指针，内存没变，指向内存的指针也不会变。
 
-2）当数据元素增多时（从10000到20000），map的set的查找速度会怎样变化？
+2. 当数据元素增多时（从10000到20000），map的set的查找速度会怎样变化？
 
 RB-TREE用二分查找法，时间复杂度为logn，所以从10000增到20000时，查找次数从log10000=14次到log20000=15次，多了1次而已。
 
@@ -988,11 +988,10 @@ RB-TREE用二分查找法，时间复杂度为logn，所以从10000增到20000�
 
 #### 为何map和set不能像vector一样有个reserve函数来预分配数据？
 
-- map和set内部存储的已经不是元素本身了，而是包含元素的节点。也就是说map内部使用的Alloc并不是map声明的时候从参数中传入的Alloc。例如：
-`map<int, Alloc > intmap`;
-这时候在intmap中使用的allocator并不是Alloc, 而是通过了转换的Alloc，具体转换的方法时在内部通过
-Alloc::rebind重新定义了新的节点分配器，详细的实现参看彻底学习STL中的Allocator。
-其实你就记住一点，在map和set里面的分配器已经发生了变化，reserve方法你就不要奢望了。
+- map和set内部存储的已经不是元素本身了，而是包含元素的节点。
+- 也就是说map内部使用的Alloc并不是map声明的时候从参数中传入的Alloc。例如：`map<int, Alloc > intmap`;
+- 这时候在intmap中使用的allocator并不是Alloc, 而是通过了转换的Alloc，具体转换的方法时在内部通过Alloc::rebind重新定义了新的节点分配器，详细的实现参看彻底学习STL中的Allocator。
+- 其实你就记住一点，在map和set里面的分配器已经发生了变化，reserve方法你就不要奢望了。
 
  
 
@@ -1016,7 +1015,16 @@ Alloc::rebind重新定义了新的节点分配器，详细的实现参看彻底�
 
 #### hash_map和map的区别在哪里？
 
-hash_map底层是散列的所以理论上操作的平均复杂度是常数时间，map底层是红黑树，理论上平均复杂度是O(logn)，这里总结一下，选用map还是hash_map，关键是看关键字查询操作次数，以及你所需要保证的是查询总体时间还是单个查询的时间。如果是要很多次操作，要求其整体效率，那么使用hash_map，平均处理时间短。如果是少数次的操作，使用 hash_map可能造成不确定的O(N)，那么使用平均处理时间相对较慢、单次处理时间恒定的map，考虑整体稳定性应该要高于整体效率，因为前提在操作次数较少。如果在一次流程中，使用hash_map的少数操作产生一个最坏情况O(N)，那么hash_map的优势也因此丧尽了。
+- hash_map底层是散列的所以理论上操作的平均复杂度是常数时间，map底层是红黑树，理论上平均复杂度是O(logn);
+这里总结一下:
+
+选用map还是hash_map，关键是看关键字查询操作次数，以及你所需要保证的是查询总体时间还是单个查询的时间。
+
+1. 如果是要很多次操作，要求其整体效率，那么使用hash_map，平均处理时间短。
+2. 如果是少数次的操作，使用 hash_map可能造成不确定的O(N)，那么使用平均处理时间相对较慢、单次处理时间恒定的map，考虑整体稳定性应该要高于整体效率，因为前提在操作次数较少。
+
+
+如果在一次流程中，使用hash_map的少数操作产生一个最坏情况O(N)，那么hash_map的优势也因此丧尽了。
 
 
 
@@ -1030,6 +1038,14 @@ hash_map底层是散列的所以理论上操作的平均复杂度是常数时间
 
 
 # 【参考资料】
+## 主要参考
+
+- [CyC2018](https://github.com/CyC2018/CS-Notes)
+- [linw7/Skill-Tree](https://github.com/linw7/Skill-Tree/blob/master/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80C++.md)
+- [huihut/interview](https://github.com/huihut/interview)
+
+
+## 次要参考
 - [经典面试题之new和malloc的区别](https://blog.csdn.net/nie19940803/article/details/76358673)
 - [C++中的new、operator new与placement new](https://www.cnblogs.com/luxiaoxun/archive/2012/08/10/2631812.html)
 - [sizeof与strlen的区别](https://www.cnblogs.com/luori719/p/5218163.html)
