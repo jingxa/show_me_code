@@ -21,6 +21,7 @@
 - [167. Two Sum II - Input array is sorted](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/description/)
 
 <details><summary>code</summary>
+
 ```
 class Solution {
 public:
@@ -50,12 +51,14 @@ public:
     }
 };
 ```
+
 </details>
 
 ## 1.2 633. Sum of Square Numbers[leetcode]
 
 
 <details><summary>code</summary>
+
 ```
 class Solution {
 public:
@@ -80,13 +83,16 @@ public:
         
     }
 };
+
 ```
+
 </details>
 
 ## 1.3 345. Reverse Vowels of a String (Easy)
 - 逆转两个元音字母
 
 <details><summary>code</summary>
+
 ```
 
 class Solution {
@@ -129,12 +135,14 @@ public:
 };
 
 ```
+
 </details>
 
 
 ## 1.4 680. Valid Palindrome II
 
 <details><summary>code</summary>
+
 ```
 class Solution {
 public:
@@ -166,11 +174,13 @@ public:
     }
 };
 ```
+
 </details>
 
 ## 1.5 88. Merge Sorted Array (Easy)
 
 <details><summary>code</summary>
+
 ```
 class Solution {
 public:
@@ -207,11 +217,13 @@ public:
 };
 
 ```
+
 </details>
 
 ## 1.6 141. Linked List Cycle (Easy)
 
 <details><summary>code</summary>
+
 ```
 class Solution {
 public:
@@ -232,11 +244,13 @@ public:
     }
 };
 ```
+
 </details>
 
 ## 1.7 524. Longest Word in Dictionary through Deleting (Medium)
 
 <details><summary>code</summary>
+
 ```
 class Solution {
 public:
@@ -275,6 +289,7 @@ public:
     
 };
 ```
+
 </details>
 
 
@@ -283,6 +298,7 @@ public:
 ## 2.1 215. Kth Largest Element in an Array (Medium)
 
 <details><summary>code</summary>
+
 ```
 class Solution {
 public:
@@ -307,30 +323,37 @@ public:
 };
 
 ```
+
 </details>
 
 
 ## 2.2 347. Top K Frequent Elements (Medium)
 
 <details><summary>code</summary>
+
 ```
 
 
 ```
+
 </details>
 
 ## 2.3
 
 <details><summary>code</summary>
+
 ```
 ```
+
 </details>
 
 ## 2.4
 <details><summary>code</summary>
+
 ```
 
 ```
+
 </details>
 
 
@@ -338,61 +361,78 @@ public:
 ## 2.5
 
 <details><summary>code</summary>
+
 ```
 ```
+
 </details>
 
 
 ## 2.6
 
 <details><summary>code</summary>
+
 ```
 ```
+
 </details>
 
 ## 2.7
 
 
 <details><summary>code</summary>
+
 ```
+
 ```
+
 </details>
 
 ## 2.8
 
 
 <details><summary>code</summary>
+
 ```
 ```
+
 </details>
 
 
 ## 2.9
 
 <details><summary>code</summary>
+
 ```
 ```
+
 </details>
 
 
 ## 2.10
 
 <details><summary>code</summary>
+
 ```
 ```
+
 </details>
 
 ## 2.11
 
 <details><summary>code</summary>
+
 ```
 ```
+
 </details>
 
 ## 2.12
 <details><summary>code</summary>
+
 ```
 ```
+
 </details>
 
 

@@ -361,6 +361,7 @@ enum { floatPrec = 6, doublePrec = 10 };
 - 用花括号初始化器列表列表初始化一个对象，其中对应构造函数接受一个 std::initializer_list 参数.
 
 <details><summary>initializer_list use</summary>
+
 ```
 #include <iostream>
 #include <vector>
@@ -411,6 +412,7 @@ int main()
     templated_fn<std::vector<int>>({1, 2, 3});           // 也 OK
 }
 ```
+
 </details>
 
 
@@ -810,6 +812,7 @@ char* strncat (char *dst, const char* src , size_t n){
 ```
 
 #### strlen 
+
 
 ```
 sizt_t strlen(const char* s)
