@@ -332,13 +332,158 @@ public:
 <details><summary>code</summary>
 
 ```
-
+class Solution {
+public:
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        unordered_map<int, int> freq;
+        for (int i = 0; i < nums.size(); i++)
+            freq[nums[i]]++;
+        
+        int range_min = 0;
+        int range_max = 0;
+        for (auto it = freq.begin(); it != freq.end(); it++)
+        {
+            range_min = min(range_min, it->second);
+            range_max = max(range_max, it->second);
+        }
+        
+        vector<vector<int>> buckets(range_max - range_min + 1);
+        for (auto it = freq.begin(); it != freq.end(); it++)
+        {
+            buckets[it->second - range_min].push_back(it->first);
+        }
+        
+        vector<int> result;
+        for (int i = int(buckets.size())-1; i >= 0; i--)
+        {
+            for (int j = 0; j < buckets[i].size(); j++)
+            {
+                result.push_back(buckets[i][j]);
+                if (result.size() == k)
+                    return result;
+            }
+        }
+        
+        return result;
+    }  
+        
+};
 
 ```
 
 </details>
 
-## 2.3
+## 2.3 451. Sort Characters By Frequency (Medium)
+
+<details><summary>code</summary>
+
+```
+class Solution {
+public:
+    string frequencySort(string s) {
+        int len = s.size();
+        map<char, int> mapping;
+        int maxn = 0;
+        for(char c : s){
+            mapping[c] ++;
+            if(maxn < mapping[c])
+                maxn = mapping[c];
+        }
+
+        vector<vector<char>> buckets(maxn+1);
+        
+        for(auto it = mapping.begin();it != mapping.end(); it++){  // 桶排序
+            buckets[it->second].push_back(it->first);
+        }
+        
+        string res;
+        for(int i= maxn; i>=0; i-- ){
+            for(char c : buckets[i]){
+                for(int j = 0;j<i;j++){
+                    res += c;
+                }
+            }        
+        }
+        
+        return res;
+
+    }
+};
+
+```
+
+</details>
+
+## 2.4 75. Sort Colors (Medium)
+
+> 荷兰国旗问题
+> 荷兰国旗包含三种颜色：红、白、蓝。
+> 有三种颜色的球，算法的目标是将这三种球按颜色顺序正确地排列。
+> 它其实是三向切分快速排序的一种变种，在三向切分快速排序中，每次切分都将数组分成三个区间：小于切分> 元素、等于切分元素、大于切分元素，而该算法是将数组分成三个区间：等于红色、等于白色、等于蓝色。
+
+<details><summary>code</summary>
+
+```
+class Solution {
+public:
+    void sortColors(vector<int>& nums) {
+        if(nums.empty())
+            return;
+        int zero = 0, one = 0, two = nums.size()-1;
+        while(one < two){
+            if(nums[one] == 0){
+                swap(nums[zero],nums[one]);
+
+                zero++;
+                one++;
+            }
+            else if(nums[one] == 2){
+                swap(nums[one],nums[two]);
+
+                two--;
+            }
+            else
+                one++;
+        }  
+
+    }
+
+};
+
+```
+
+</details>
+
+
+
+# 3 贪心算法
+- 保证每次操作都是局部最优的，并且最后得到的结果是全局最优的。
+
+## 3.1 455. Assign Cookies (Easy)
+<details><summary>code</summary>
+
+```
+class Solution {
+public:
+    int findContentChildren(vector<int>& g, vector<int>& s) {
+        sort(g.begin(),g.end());
+        sort(s.begin(),s.end());
+        
+        int i=0,j=0;
+        while(i< g.size() && j < s.size()){
+            if(g[i] <= s[j])
+                i++;  // 满足一个孩子，下一个孩子
+            j++;    // 下一块饼干
+        }
+        return i;
+    }
+};
+```
+
+</details>
+
+
+## 3.2 435. Non-overlapping Intervals (Medium)
 
 <details><summary>code</summary>
 
@@ -347,37 +492,7 @@ public:
 
 </details>
 
-## 2.4
-<details><summary>code</summary>
-
-```
-
-```
-
-</details>
-
-
-
-## 2.5
-
-<details><summary>code</summary>
-
-```
-```
-
-</details>
-
-
-## 2.6
-
-<details><summary>code</summary>
-
-```
-```
-
-</details>
-
-## 2.7
+## 3.3
 
 
 <details><summary>code</summary>
@@ -388,7 +503,7 @@ public:
 
 </details>
 
-## 2.8
+## 3.4
 
 
 <details><summary>code</summary>
@@ -399,7 +514,7 @@ public:
 </details>
 
 
-## 2.9
+## 3.5
 
 <details><summary>code</summary>
 
@@ -409,7 +524,7 @@ public:
 </details>
 
 
-## 2.10
+## 3.6
 
 <details><summary>code</summary>
 
@@ -418,7 +533,7 @@ public:
 
 </details>
 
-## 2.11
+## 3.7
 
 <details><summary>code</summary>
 
@@ -427,7 +542,7 @@ public:
 
 </details>
 
-## 2.12
+## 3.8
 <details><summary>code</summary>
 
 ```
